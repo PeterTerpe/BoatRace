@@ -1,0 +1,9 @@
+name: BoatRace
+version: 0.1
+main: me.peterterpe.boatrace.BoatRace
+api-version: 1.21
+author: PeterTerpe
+commands:
+  race:
+    permission: "boatrace.root"
+    description: "This is a command in BoatRace plugin by PeterTerpe"

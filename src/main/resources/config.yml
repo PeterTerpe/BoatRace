@@ -1,0 +1,5 @@
+mysql-enabled: false
+mysql-host: "localhost"
+mysql-database: "BoatRacing"
+mysql-user: "BoatRacingPlugin"
+mysql-password: "12345"

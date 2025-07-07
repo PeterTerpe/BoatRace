@@ -34,6 +34,14 @@ public class RaceTrackManager {
         tracks.put(track.getName(), track);
     }
 
+    public String unregister(String name) {
+        Hologram holo = DHAPI.getHologram(name);
+        if (holo != null) {
+            holo.delete();
+        }
+        return tracks.remove(name).getName();
+    }
+
     public RaceTrack get(String name) {
         return tracks.get(name);
     }
@@ -41,15 +49,6 @@ public class RaceTrackManager {
     public Collection<RaceTrack> getAll() {
         return tracks.values();
     }
-
-    public void unregister(String name) {
-        Hologram holo = DHAPI.getHologram(name);
-        if (holo != null) {
-            holo.delete();
-        }
-        tracks.remove(name);
-    }
-
     // Serialise track to json
     public String serialize(RaceTrack track) {
         return gson.toJson(track);

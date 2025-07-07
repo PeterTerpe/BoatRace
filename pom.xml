@@ -70,12 +70,15 @@
             <configuration>
               <filters>
                 <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                  </excludes>
+                    <artifact>*:*</artifact>
+                    <excludes>
+                        <exclude>META-INF/versions/**/module-info.class</exclude>
+                        <exclude>module-info.class</exclude>
+                        <exclude>META-INF/MANIFEST.MF</exclude>
+                        <exclude>META-INF/*.SF</exclude>
+                        <exclude>META-INF/*.DSA</exclude>
+                        <exclude>META-INF/*.RSA</exclude>
+                    </excludes>
                 </filter>
               </filters>
               <createDependencyReducedPom>false</createDependencyReducedPom>

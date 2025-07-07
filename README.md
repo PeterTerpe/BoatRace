@@ -2,3 +2,5 @@
 A Java Minecraft Paper plugin that provides timers and scoreboards for races.
 
 This plugin is currently in development.
+
+Please check README.md in main

@@ -2,11 +2,13 @@ package me.peterterpe.boatrace;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -32,7 +34,7 @@ public class RaceCommandHandler implements TabExecutor {
             return validArg;
         }
         switch (args.length) {
-            case 1:
+            case 0:
                 Map<String, String> subCommands = Map.of(
                     "create", "boatrace.create",
                     "start",  "boatrace.start",
@@ -51,10 +53,10 @@ public class RaceCommandHandler implements TabExecutor {
                     }
                 }
                 StringUtil.copyPartialMatches(args[0], permittedArg, validArg);
-            case 2:
+            case 1:
                 String sub = args[0].toLowerCase();
                 switch (sub) {
-                    case "create": case "delete":
+                    case "create": case "delete": case "join": case "start":
                         Collection<RaceTrack> tracks = RaceTrackManager.getInstance().getAll();
                         List<String> trackNames = new ArrayList<>();
                         if (!(tracks.isEmpty())) {
@@ -64,6 +66,16 @@ public class RaceCommandHandler implements TabExecutor {
                             }
                         }
                         StringUtil.copyPartialMatches(args[0], trackNames, validArg);
+                    case "setstart1": case "setstart2": case "setfinish1": case "setfinish2":
+                        if (!(sender instanceof Player player)) {
+                            return validArg;
+                        }
+                        Block target = player.getTargetBlockExact(5);  // get target position
+                        if (target != null) {
+                            Location loc = target.getLocation();
+                            String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
+                            return Collections.singletonList(coords);
+                        }
                     default:
                         break;
                 }

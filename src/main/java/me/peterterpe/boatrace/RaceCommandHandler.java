@@ -124,7 +124,7 @@ public class RaceCommandHandler implements TabExecutor {
                 } else {
                     createTrack(args[1], args[2]);
                 }
-                sender.sendMessage(Component.translatable("track.create.success", Component.text(args[2])));
+                sender.sendMessage(Component.translatable("track.create.success", Component.text(args[1])));
             case "delete": 
                 if (!(sender.hasPermission("boatrace.delete"))) {
                     noPerm(sender);
@@ -138,7 +138,7 @@ public class RaceCommandHandler implements TabExecutor {
                 if (manager.unregister(sub) == null) {
                     sender.sendMessage(Component.translatable("error.track.notfound"));
                 } else {
-                    sender.sendMessage(Component.translatable("success.track.delete", Component.text()));
+                    sender.sendMessage(Component.translatable("success.track.delete", Component.text(args[1])));
                 }
             case "setstart1": case "setstart2": case "setfinish1": case "setfinish2":
                 if (!(sender.hasPermission("boatrace.modify"))) {

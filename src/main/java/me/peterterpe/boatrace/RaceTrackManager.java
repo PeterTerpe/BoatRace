@@ -39,6 +39,7 @@ public class RaceTrackManager {
         if (holo != null) {
             holo.delete();
         }
+        StorageManager.getInstance().deleteTrack(tracks.get(name));
         tracks.remove(name);
     }
 

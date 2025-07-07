@@ -141,4 +141,13 @@ public class StorageManager {
             }
         }
     }
+    public void deleteTrack(RaceTrack track) {
+        String name = track.getName();
+        yamlConfig.set(name, null);
+        try {
+            yamlConfig.save(yamlFile);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed writing track deletion to file: " + name, e);
+        }
+    }
 }

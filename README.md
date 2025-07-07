@@ -5,7 +5,7 @@ A Java Minecraft Paper plugin that provides timers and scoreboards for races.
 ## What would the plugin do when it's completed
  First create a track, then setup a finish region. When a player in the race session reached the finish line, their timer is sent to players within the same session. When the session completes, the hollogram scoreboard will be updated, showing top 5 score on this track with each player has maximum of 1 record. A player's best 5 runs at each track are also stored.
 
-### Usage:
+## Usage:
     /race create <name> # create a race track
     /race setstart1 <name> [x] [y] [z] # set start region point 1
     /race setstart1 <name> [x] [y] [z] # set start region point 2
@@ -14,9 +14,11 @@ A Java Minecraft Paper plugin that provides timers and scoreboards for races.
     /race delete <name> # delete a track
 ## Feature list:
  - Per player translation (locale file not completed yet)
+ - .yml file storage support
  - MySQL support (not tested)
- - Support multiple tracks in the same world / custom dimensions
-
+ - Support multiple tracks in the same world & Multiverse
+ - Countdown
+ - Finish line message
 ## TODO:
  - Persistent scoreboard using DecentHolograms: personal best and track top 5
  - Timer display during race

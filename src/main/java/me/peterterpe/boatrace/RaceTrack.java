@@ -105,10 +105,7 @@ public class RaceTrack {
         }
         return topTimes.contains(time);
     }
-
-    /**
-     * 格式化毫秒为 mm:ss.SSS
-     */
+    // Format milisec to mm:ss.SSS
     public String formatTime(long millis) {
         long totalSec = millis / 1000;
         long min = totalSec / 60;

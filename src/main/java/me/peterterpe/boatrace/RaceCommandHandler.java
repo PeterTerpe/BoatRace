@@ -24,6 +24,17 @@ public class RaceCommandHandler implements TabExecutor {
         manager.register(track);
         StorageManager.getInstance().saveTrack(track);
     }
+    private List<String> getAllTracks() {
+        Collection<RaceTrack> tracks = RaceTrackManager.getInstance().getAll();
+        List<String> trackNames = new ArrayList<>();
+        if (!(tracks.isEmpty())) {
+            for (RaceTrack track : tracks) {
+                String trackName = track.getName();
+                trackNames.add(trackName);
+            }
+        }
+        return trackNames;
+    }
     // on-tab completion
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
@@ -57,14 +68,7 @@ public class RaceCommandHandler implements TabExecutor {
                 String sub = args[0].toLowerCase();
                 switch (sub) {
                     case "create": case "delete": case "join": case "start":
-                        Collection<RaceTrack> tracks = RaceTrackManager.getInstance().getAll();
-                        List<String> trackNames = new ArrayList<>();
-                        if (!(tracks.isEmpty())) {
-                            for (RaceTrack track : tracks) {
-                                String trackName = track.getName();
-                                trackNames.add(trackName);
-                            }
-                        }
+                        List<String> trackNames = getAllTracks();
                         StringUtil.copyPartialMatches(args[0], trackNames, validArg);
                     case "setstart1": case "setstart2": case "setfinish1": case "setfinish2":
                         if (!(sender instanceof Player player)) {
@@ -87,9 +91,6 @@ public class RaceCommandHandler implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
-        
-        
         if (args.length == 0) {
             sender.sendMessage("§6--- /race 帮助 ---");
             sender.sendMessage("/race create <name> - 创建赛道");
@@ -125,6 +126,7 @@ public class RaceCommandHandler implements TabExecutor {
                     createTrack(args[1], args[2]);
                 }
                 sender.sendMessage(Component.translatable("track.create.success", Component.text(args[1])));
+                break;
             case "delete": 
                 if (!(sender.hasPermission("boatrace.delete"))) {
                     noPerm(sender);
@@ -134,12 +136,14 @@ public class RaceCommandHandler implements TabExecutor {
                     needArg(sender);
                     return false;
                 }
-                var manager = RaceTrackManager.getInstance();
-                if (manager.unregister(sub) == null) {
-                    sender.sendMessage(Component.translatable("error.track.notfound"));
-                } else {
+                if (getAllTracks().contains(args[1])) {
+                    var manager = RaceTrackManager.getInstance();
+                    manager.unregister(args[1]);
                     sender.sendMessage(Component.translatable("success.track.delete", Component.text(args[1])));
+                } else {
+                    sender.sendMessage(Component.translatable("error.track.notfound"));
                 }
+                break;
             case "setstart1": case "setstart2": case "setfinish1": case "setfinish2":
                 if (!(sender.hasPermission("boatrace.modify"))) {
                     noPerm(sender);
@@ -176,6 +180,7 @@ public class RaceCommandHandler implements TabExecutor {
                         }
                     }
                 }
+                break;
             case "join":
                 if (!(sender.hasPermission("boatrace.join"))) {
                     noPerm(sender);
@@ -191,6 +196,7 @@ public class RaceCommandHandler implements TabExecutor {
                     sender.sendMessage(Component.translatable("error.notplayer"));
                     return false;
                 }
+                break;
             case "start":
                 if (!(sender.hasPermission("boatrace.start"))) {
                     noPerm(sender);
@@ -202,6 +208,7 @@ public class RaceCommandHandler implements TabExecutor {
                 RaceSession session = BoatRace.getInstance().getRaceManager().getSession(track);
                 if (session == null) return noRes(sender);
                 session.startCountdown(5);
+                break;
             default: sender.sendMessage(Component.translatable("error.command.notfound"));
         }
         return true;

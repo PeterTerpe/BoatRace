@@ -34,12 +34,12 @@ public class RaceTrackManager {
         tracks.put(track.getName(), track);
     }
 
-    public String unregister(String name) {
+    public void unregister(String name) {
         Hologram holo = DHAPI.getHologram(name);
         if (holo != null) {
             holo.delete();
         }
-        return tracks.remove(name).getName();
+        tracks.remove(name);
     }
 
     public RaceTrack get(String name) {

@@ -24,8 +24,8 @@ public class RaceManager {
     /**
      * 在比赛结束或取消时调用，移除该赛道的会话。
      */
-    public void endSession(RaceTrack track) {
-        activeSessions.remove(track);
+    public RaceSession endSession(RaceTrack track) {
+        return activeSessions.remove(track);
     }
 
     /**

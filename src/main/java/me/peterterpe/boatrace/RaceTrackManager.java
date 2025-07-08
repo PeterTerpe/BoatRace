@@ -68,8 +68,8 @@ public class RaceTrackManager {
         List<String> lines = new ArrayList<>();
         lines.add("§6🏁 Top Times - " + track.getName());
         int rank = 1;
-        for (long time : track.getTopTimes()) {
-            lines.add(String.format("%d) %s", rank++, track.formatTime(time)));
+        for (RaceResult topResult : track.getTopTimes()) {
+            lines.add(String.format("%d) %s", rank++, track.formatTime(topResult.getTimeInMs())));
             if (rank > 5) break;
         }
 

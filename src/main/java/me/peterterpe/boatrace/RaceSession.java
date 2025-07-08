@@ -5,6 +5,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import java.util.*;
 
 public class RaceSession {
@@ -29,9 +30,9 @@ public class RaceSession {
         }
     }
 
-    public void broadcastToParticipants(Component msg) {
+    public void broadcastToParticipants(Title title) {
         for (Player p : participants) {
-            BoatRace.getInstance().adventure().player(p).sendMessage(msg);
+            BoatRace.getInstance().adventure().player(p).showTitle(title);
         }
     }
 
@@ -39,15 +40,16 @@ public class RaceSession {
         if (started) return;
         if (participants.isEmpty()) {
             Bukkit.getLogger().warning("No participants in track "+track.getName());
+            return;
         }
-        broadcastToParticipants(Component.translatable("race.start.message", Component.text(track.getName())));
+        broadcastToParticipants(Title.title(Component.translatable("race.start.message", Component.text(track.getName())), Component.empty()));
         this.started = true;
         new BukkitRunnable() {
             int timer = seconds;
             @Override
             public void run() {
                 if (timer <= 0) {
-                    broadcastToParticipants(Component.translatable("race.go"));;
+                    broadcastToParticipants(Title.title(Component.translatable("race.go"), Component.empty()));;
                     for (Player player : participants) {
                         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
                         startTimes.put(player, System.currentTimeMillis());
@@ -59,7 +61,7 @@ public class RaceSession {
                     }
                     this.cancel();
                 } else {
-                    broadcastToParticipants(Component.translatable("race.countdown", Component.text(timer)));
+                    broadcastToParticipants(Title.title(Component.translatable("race.countdown", Component.text(timer)), Component.empty()));
                     for (Player player : participants) {
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
                     }

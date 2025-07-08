@@ -15,14 +15,16 @@ A Java Minecraft Paper plugin that provides timers and scoreboards for races.
 ## Feature list:
  - Per player translation (locale file not completed yet)
  - .yml file storage support
- - MySQL support (not tested)
+ - MySQL support (might be dropped in future)
  - Support multiple tracks in the same world & Multiverse
  - Countdown
  - Finish line message
+ - Top5 logic: one player can only appear on the same board for once
 ## TODO:
- - Persistent scoreboard using DecentHolograms: personal best and track top 5
+ - Display scoreboards using DecentHolograms
  - Timer display during race
  - Luckperms support
  - Tab complete command
  - Limit players who joined the race to the start region at countdown
  - More supported paper versions
+ - Store scoreboards: track top5 & personal bests

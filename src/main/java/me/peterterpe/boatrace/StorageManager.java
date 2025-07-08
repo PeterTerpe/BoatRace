@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.List;
 import java.util.logging.Level;
 
 public class StorageManager {
@@ -134,6 +135,13 @@ public class StorageManager {
             });
         } else {
             yamlConfig.set(name + ".data", json);
+            List<RaceResult> top5 = track.getTopTimes();
+            for (int i = 0; i < Math.min(top5.size(), 5); i++) {
+                RaceResult result = top5.get(i);
+                String path = name + ".top5." + (i + 1);
+                yamlConfig.set(path + ".name", result.getPlayerName());
+                yamlConfig.set(path + ".time", result.getTimeInMs());
+            }
             try {
                 yamlConfig.save(yamlFile);
             } catch (IOException e) {

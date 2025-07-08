@@ -70,7 +70,11 @@ public class RaceSession {
             }
         }.runTaskTimer(BoatRace.getInstance(), 0L, 20L); // 20 ticks
     }
-
+    /**
+     * Remove player from the race session
+     * if participants are empty after removal, started will be set to false
+     * @param player
+     */
     public void checkFinish(Player player) {
         if (!started) return;
         if (!startTimes.containsKey(player)) return;
@@ -80,6 +84,17 @@ public class RaceSession {
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);
             player.sendMessage(Component.translatable("top5.congrats", Component.text("The Argument")));
         }
+        stop(player);
+    }
+    /* Remove all participants and their timers and set started to false */
+    public void forceStop() {
+        for (Player player : participants) {
+            stop(player);
+        }
+    }
+
+    /* Remove player from participants and their timer */
+    public void stop(Player player) {
         participants.remove(player);
         startTimes.remove(player);
         raceTimers.get(player).stop();

@@ -207,7 +207,18 @@ public class RaceCommandHandler implements TabExecutor {
                 if (track == null) return noTrack(sender);
                 RaceSession session = BoatRace.getInstance().getRaceManager().getSession(track);
                 if (session == null) return noRes(sender);
-                session.startCountdown(5);
+                BoatRace.getInstance().getRaceManager().getSession(track).startCountdown(5);;
+                break;
+            case "stop":
+                if (!(sender.hasPermission("boatrace.stop"))) {
+                    noPerm(sender);
+                    return false;
+                }
+                if (args.length < 2) return needArg(sender);
+                track = RaceTrackManager.getInstance().get(args[1]);
+                session = BoatRace.getInstance().getRaceManager().getSession(track);
+                if (session == null) return noRes(sender);
+                BoatRace.getInstance().getRaceManager().endSession(track).forceStop();
                 break;
             default: sender.sendMessage(Component.translatable("error.command.notfound"));
         }

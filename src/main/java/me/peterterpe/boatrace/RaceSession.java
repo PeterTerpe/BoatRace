@@ -52,6 +52,10 @@ public class RaceSession {
                 }
             }
         }.runTaskTimer(BoatRace.getInstance(), 0L, 20L); // 20 ticks
+        for (Player player : participants) {
+            RaceTimer racetimer = new RaceTimer(player);
+            racetimer.start(); // start race timer
+        }
     }
 
     public void checkFinish(Player player) {
@@ -65,6 +69,8 @@ public class RaceSession {
         }
         participants.remove(player);
         startTimes.remove(player);
+        // RaceTimer timer = RaceTimer.getInstance(player);
+        // .stop();
     }
 
     public boolean isRunning() {

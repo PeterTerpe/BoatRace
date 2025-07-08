@@ -4,16 +4,22 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RaceTimer {
     private final Player player;
     private long startTimeNano;
     private BukkitRunnable task;
+    private Map<Player, RaceTimer> raceTimers = new HashMap<>();
 
     public RaceTimer(Player player) {
         this.player = player;
+        raceTimers.put(player, this);
     }
-
+    public RaceTimer getInstance(Player player) {
+        return raceTimers.get(player);
+    }
     public void start() {
         startTimeNano = System.nanoTime();
         task = new BukkitRunnable() {
@@ -26,15 +32,14 @@ public class RaceTimer {
                 int displayMs = (ms / 10) * 10;
                 String timerText = String.format("%02d:%03d", seconds, displayMs);
 
-                Component msg = Component.text("时间: ")
+                Component msg = Component.translatable("race.timer")
                                         .color(NamedTextColor.GREEN)
                                         .append(Component.text(timerText).color(NamedTextColor.YELLOW));
-                player.sendActionBar(msg); // Adventure API 推荐用法 :contentReference[oaicite:7]{index=7}
+                player.sendActionBar(msg);
             }
         };
-        task.runTaskTimer(BoatRace.getInstance(), 0L, 1L); // 每 tick 执行一次（50ms）
+        task.runTaskTimer(BoatRace.getInstance(), 0L, 1L); // run every tick
     }
-
     public void stop() {
         if (task != null) {
             task.cancel();

@@ -1,5 +1,6 @@
 package me.peterterpe.boatrace;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -11,15 +12,21 @@ public class RaceSession {
     private final Set<Player> participants = new HashSet<>();
     private final Map<Player, Long> startTimes = new HashMap<>();
     private boolean started = false;
+    private Map<Player, RaceTimer> raceTimers = new HashMap<>();
 
     public RaceSession(RaceTrack track) {
         this.track = track;
     }
 
     public void addPlayer(Player player) {
-        if (started) return;
+        if (started) {
+            player.sendMessage(Component.translatable("fail.join.started"));
+            return;
+        }
         participants.add(player);
-        player.sendMessage(Component.translatable("race.joinMessage", Component.text(track.getName())));
+        for (Player p : participants) {
+            p.sendMessage(Component.translatable("success.race.join", Component.text(p.getName()), Component.text(track.getName())));   
+        }
     }
 
     public void broadcastToParticipants(Component msg) {
@@ -30,7 +37,11 @@ public class RaceSession {
 
     public void startCountdown(int seconds) {
         if (started) return;
-        broadcastToParticipants(Component.translatable("race.startMessage", Component.text(track.getName())));
+        if (participants.isEmpty()) {
+            Bukkit.getLogger().warning("No participants in track "+track.getName());
+        }
+        broadcastToParticipants(Component.translatable("race.start.message", Component.text(track.getName())));
+        this.started = true;
         new BukkitRunnable() {
             int timer = seconds;
             @Override
@@ -41,7 +52,11 @@ public class RaceSession {
                         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
                         startTimes.put(player, System.currentTimeMillis());
                     }
-                    started = true;
+                    for (Player player : participants) {
+                        RaceTimer racetimer = new RaceTimer(player);
+                        raceTimers.put(player, racetimer);
+                        racetimer.start(); // start race timer
+                    }
                     this.cancel();
                 } else {
                     broadcastToParticipants(Component.translatable("race.countdown", Component.text(timer)));
@@ -52,10 +67,6 @@ public class RaceSession {
                 }
             }
         }.runTaskTimer(BoatRace.getInstance(), 0L, 20L); // 20 ticks
-        for (Player player : participants) {
-            RaceTimer racetimer = new RaceTimer(player);
-            racetimer.start(); // start race timer
-        }
     }
 
     public void checkFinish(Player player) {
@@ -69,8 +80,12 @@ public class RaceSession {
         }
         participants.remove(player);
         startTimes.remove(player);
-        // RaceTimer timer = RaceTimer.getInstance(player);
-        // .stop();
+        raceTimers.get(player).stop();
+        raceTimers.remove(player);
+        // Change the status to not started to allow future joins.
+        if (participants.isEmpty()) {
+            this.started = false;
+        }
     }
 
     public boolean isRunning() {

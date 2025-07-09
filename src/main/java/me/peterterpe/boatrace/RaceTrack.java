@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.util.BoundingBox;
 
 import com.google.gson.annotations.Expose;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +23,7 @@ public class RaceTrack {
     @Expose private Location holoLocation;
 
     // 记录排行榜（单位毫秒）
-    @Expose private List<Long> topTimes = new ArrayList<>();
+    @Expose private List<RaceResult> topTimes = new ArrayList<>();
 
     // 玩家个人最好成绩映射：UUID -> 最好时间（毫秒）
     @Expose private transient /* 不参与序列化的缓存，可改为持久化结构 */ 
@@ -41,10 +40,13 @@ public class RaceTrack {
         switch (point) {
             case 1:
                 this.startA = location;
+                break;
             case 2:
                 this.startB = location;
+                break;
             case 3:
                 this.finishA = location;
+                break;
             case 4:
                 this.finishB = location;
             default:
@@ -71,8 +73,8 @@ public class RaceTrack {
     public void setShowHologram(boolean show) { this.showHologram = show; }
     public Location getHoloLocation() { return holoLocation; }
     public void setHoloLocation(Location holoLocation) { this.holoLocation = holoLocation; }
-    public List<Long> getTopTimes() { return topTimes; }
-    public void setTopTimes(List<Long> times) { this.topTimes = times; }
+    public List<RaceResult> getTopTimes() { return topTimes; }
+    public void setTopTimes(List<RaceResult> times) { this.topTimes = times; }
 
     /**
      * 检查给定位置是否在赛道起点区域内。
@@ -97,13 +99,35 @@ public class RaceTrack {
     /**
      * 尝试将给定时间加入排行榜（Top5），若排入前5返回 true。
      */
-    public boolean addTime(long time) {
-        topTimes.add(time);
-        Collections.sort(topTimes);
-        if (topTimes.size() > 5) {
-            topTimes = topTimes.subList(0, 5);
+    public boolean addTime(String playerName, long time) {
+        // check if player is on board
+        for (int i = 0; i < topTimes.size(); i++) {
+            if (topTimes.get(i).getPlayerName() == playerName) {
+                if (topTimes.get(i).getTimeInMs() > time) {
+                    topTimes.remove(i);
+                    break;
+                } else {
+                    return false;
+                }
+            }
         }
-        return topTimes.contains(time);
+        // if the scoreboard is empty
+        if (topTimes.size() == 0) {
+            topTimes.add(new RaceResult(playerName, time));
+            return true;
+        }
+        for (int i = 0; i < topTimes.size(); i++) {
+            if (topTimes.get(i).getTimeInMs() < time) {
+                continue;
+            } else {
+                topTimes.add(i, new RaceResult(playerName, time));
+                if (topTimes.size() > 5) {
+                    topTimes = topTimes.subList(0, 4);
+                }
+                return true;
+            }
+        }
+        return false;
     }
     // Format milisec to mm:ss.SSS
     public String formatTime(long millis) {

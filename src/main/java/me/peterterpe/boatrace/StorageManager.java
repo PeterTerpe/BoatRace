@@ -136,7 +136,7 @@ public class StorageManager {
         } else {
             yamlConfig.set(name + ".data", json);
             List<RaceResult> top5 = track.getTopTimes();
-            for (int i = 0; i < Math.min(top5.size(), 5); i++) {
+            for (int i = 0; i < top5.size(); i++) {
                 RaceResult result = top5.get(i);
                 String path = name + ".top5." + (i + 1);
                 yamlConfig.set(path + ".name", result.getPlayerName());

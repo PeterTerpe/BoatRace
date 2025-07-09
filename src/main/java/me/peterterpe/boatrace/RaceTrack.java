@@ -40,10 +40,13 @@ public class RaceTrack {
         switch (point) {
             case 1:
                 this.startA = location;
+                break;
             case 2:
                 this.startB = location;
+                break;
             case 3:
                 this.finishA = location;
+                break;
             case 4:
                 this.finishB = location;
             default:
@@ -98,19 +101,20 @@ public class RaceTrack {
      */
     public boolean addTime(String playerName, long time) {
         // check if player is on board
-        int existsAt = -1;
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < topTimes.size(); i++) {
             if (topTimes.get(i).getPlayerName() == playerName) {
-                existsAt = i;
-                break;
+                if (topTimes.get(i).getTimeInMs() > time) {
+                    topTimes.remove(i);
+                    break;
+                } else {
+                    return false;
+                }
             }
         }
-        // if the player is already on board and got a better score, remove the previous record
-        if (existsAt != -1) {
-            if (topTimes.get(existsAt).getTimeInMs() > time) {
-                topTimes.remove(existsAt);
-            }
-            return false;
+        // if the scoreboard is empty
+        if (topTimes.size() == 0) {
+            topTimes.add(new RaceResult(playerName, time));
+            return true;
         }
         for (int i = 0; i < topTimes.size(); i++) {
             if (topTimes.get(i).getTimeInMs() < time) {

@@ -81,6 +81,7 @@ public class RaceSession {
         long elapsed = System.currentTimeMillis() - startTimes.get(player);
         player.sendMessage(Component.translatable("race.finished", Component.text(track.getName()), Component.text(track.formatTime(elapsed))));
         if (track.addTime(player.getName(), elapsed)) {
+            StorageManager.getInstance().saveTrack(track);
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);
             player.sendMessage(Component.translatable("top5.congrats", Component.text("The Argument")));
         }

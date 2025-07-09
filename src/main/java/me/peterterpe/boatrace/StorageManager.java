@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
 import java.util.List;
@@ -17,7 +19,7 @@ public class StorageManager {
     private boolean useMySQL;
     private String host, database, user, password;
     private int port;
-
+    File tracksDir = new File(plugin.getDataFolder(), "tracks");
     private Connection sqlConnection;
     private File yamlFile;
     private FileConfiguration yamlConfig;
@@ -42,7 +44,10 @@ public class StorageManager {
             password = plugin.getConfig().getString("mysql-password", "");
             initMySQL();
         } else {
-            yamlFile = new File(plugin.getDataFolder(), "tracks.yml");
+            if (!tracksDir.exists()) {
+                tracksDir.mkdir();
+            }
+            yamlFile = new File(tracksDir, "tracks.yml");
             yamlConfig = YamlConfiguration.loadConfiguration(yamlFile);
         }
     }
@@ -75,31 +80,9 @@ public class StorageManager {
 
     public void loadAll() {
         setup();
-        if (useMySQL) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                try (Statement st = sqlConnection.createStatement();
-                     ResultSet rs = st.executeQuery("SELECT track_name, data FROM boatrace_tracks")) {
-                    while (rs.next()) {
-                        String name = rs.getString("track_name");
-                        String json = rs.getString("data");
-                        plugin.getLogger().info("[BoatRace] Load track " + name);
-                        RaceTrack track = RaceTrackManager.getInstance().deserialize(json);
-                        RaceTrackManager.getInstance().register(track);
-                    }
-                } catch (SQLException ex) {
-                    plugin.getLogger().log(Level.SEVERE, "Failed to load tracks from MySQL", ex);
-                }
-            });
-        } else {
-            if (!yamlFile.exists()) {
-                plugin.saveResource("tracks.yml", false);
-            }
-            yamlConfig = YamlConfiguration.loadConfiguration(yamlFile);
-            for (String name : yamlConfig.getKeys(false)) {
-                String json = yamlConfig.getString(name + ".data");
-                RaceTrack track = RaceTrackManager.getInstance().deserialize(json);
-                RaceTrackManager.getInstance().register(track);
-            }
+        for (File file : tracksDir.listFiles((d, name) -> name.endsWith(".json"))) {
+            RaceTrack track = RaceTrackManager.getInstance().deserialize(file.getName());
+            RaceTrackManager.getInstance().register(track);
         }
     }
 
@@ -134,6 +117,7 @@ public class StorageManager {
                 }
             });
         } else {
+            RaceTrackManager.getInstance().serialize(track);
             yamlConfig.set(name + ".data", json);
             List<RaceResult> top5 = track.getTopTimes();
             for (int i = 0; i < top5.size(); i++) {

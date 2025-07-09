@@ -8,15 +8,19 @@ import org.bukkit.Location;
 
 import java.util.Map;
 import java.util.Collection;
+import java.io.Reader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.io.File;
 
 public class RaceTrackManager {
     private static RaceTrackManager instance;
     Gson gson = new GsonBuilder().setPrettyPrinting()
             .excludeFieldsWithoutExposeAnnotation()
             .registerTypeAdapter(Location.class, new LocationAdapter())
+            .registerTypeAdapter(RaceResult.class, new RaceResultAdapter())
             .create();
     private final Map<String, RaceTrack> tracks = new ConcurrentHashMap<>();
 
@@ -56,8 +60,12 @@ public class RaceTrackManager {
     }
 
     // Deserialise from json to track
-    public RaceTrack deserialize(String json) {
-        return gson.fromJson(json, RaceTrack.class);
+    public RaceTrack deserialize(String fileName) {
+        try (Reader reader = new FileReader(fileName)) {
+            return gson.fromJson(reader, RaceTrack.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     // Update holograms

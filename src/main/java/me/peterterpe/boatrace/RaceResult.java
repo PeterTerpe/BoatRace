@@ -2,9 +2,11 @@ package me.peterterpe.boatrace;
 
 import org.bukkit.entity.Player;
 
+import com.google.gson.annotations.Expose;
+
 public class RaceResult {
-    private final String playerName;
-    private final long timeInMs;
+    @Expose private final String playerName;
+    @Expose private final long timeInMs;
 
     public RaceResult(String playerName, long timeInMs) {
         this.playerName = playerName;

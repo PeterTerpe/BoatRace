@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
+import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 
 public class RaceCommandHandler implements TabExecutor {
@@ -43,15 +43,16 @@ public class RaceCommandHandler implements TabExecutor {
         switch (args.length) {
             case 1:
                 final Map<String, String> subCommands = Map.of(
-                    "create", "boatrace.create",
-                    "start",  "boatrace.start",
-                    "delete", "boatrace.delete",
-                    "setstart1", "boatrace.modify",
-                    "setstart2", "boatrace.modify",
-                    "setfinish1", "boatrace.modify",
-                    "setfinish2", "boatrace.modify",
-                    "list",   "boatrace.list",
-                    "join", "boatrace.join"
+                    "create", "boatrace.command.create",
+                    "start",  "boatrace.command.start",
+                    "delete", "boatrace.command.delete",
+                    "setstart1", "boatrace.command.modify",
+                    "setstart2", "boatrace.command.modify",
+                    "setfinish1", "boatrace.command.modify",
+                    "setfinish2", "boatrace.command.modify",
+                    "list",   "boatrace.command.list",
+                    "join", "boatrace.command.join",
+                    "stop", "boatrace.command.stop"
                 );
                 for (var entry : subCommands.entrySet()) {
                     if (!(sender instanceof Player player) || player.hasPermission(entry.getValue())) {
@@ -61,44 +62,42 @@ public class RaceCommandHandler implements TabExecutor {
                 StringUtil.copyPartialMatches(args[0], permittedArg, validArg);
                 return validArg;
             case 2:
-                switch (args[0]) {
-                    case "create": case "delete": case "join": case "start":
-                        List<String> trackNames = getAllTracks();
-                        StringUtil.copyPartialMatches(args[1], trackNames, validArg);
+                List<String> trackNames = getAllTracks();
+                StringUtil.copyPartialMatches(args[1], trackNames, validArg);
+                return validArg;
+            case 3:
+                if (Arrays.asList("setstart1", "setstart2", "setfinish1", "setfinish2").contains(args[0])) {
+                    if (!(sender instanceof Player player)) {
                         return validArg;
-                    case "setstart1": case "setstart2": case "setfinish1": case "setfinish2":
-                        if (!(sender instanceof Player player)) {
-                            return validArg;
-                        }
-                        Block target = player.getTargetBlockExact(5);  // get target position
-                        if (target != null) {
-                            Location loc = target.getLocation();
-                            String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
-                            return Collections.singletonList(coords);
-                        }
+                    }
+                    Block target = player.getTargetBlockExact(5);  // get target position
+                    if (target != null) {
+                        Location loc = target.getLocation();
+                        String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
+                        return Collections.singletonList(coords);
+                    }
                 }
         }
         return validArg;
     }
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("§6--- /race 帮助 ---");
-            sender.sendMessage("/race create <name> - 创建赛道");
-            sender.sendMessage("/race setstart1 <name> - 设置起点角①");
-            sender.sendMessage("/race setstart2 <name> - 设置起点角②");
-            sender.sendMessage("/race setfinish1 <name> - 设置终点角①");
-            sender.sendMessage("/race setfinish2 <name> - 设置终点角②");
-            sender.sendMessage("/race join <name> - 加入比赛");
-            sender.sendMessage("/race start <name> - 启动比赛");
+            sender.sendMessage(Component.translatable("help.head"));
+            sender.sendMessage(Component.translatable("help.create"));
+            sender.sendMessage(Component.translatable("help.create"));
+            sender.sendMessage(Component.translatable("help.setstart", Component.text("①")));
+            sender.sendMessage(Component.translatable("help.setstart", Component.text("②")));
+            sender.sendMessage(Component.translatable("help.setfinish", Component.text("①")));
+            sender.sendMessage(Component.translatable("help.setfinish", Component.text("②")));
+            sender.sendMessage(Component.translatable("help.join"));
+            sender.sendMessage(Component.translatable("help.start"));
             return true;
         }
-
         String sub = args[0].toLowerCase();
         switch (sub) {
             case "create": 
-                if (!(sender.hasPermission("boatrace.create"))) {
+                if (!(sender.hasPermission("boatrace.command.create"))) {
                     noPerm(sender);
                     return false;
                 }
@@ -120,7 +119,7 @@ public class RaceCommandHandler implements TabExecutor {
                 sender.sendMessage(Component.translatable("track.create.success", Component.text(args[1])));
                 break;
             case "delete": 
-                if (!(sender.hasPermission("boatrace.delete"))) {
+                if (!(sender.hasPermission("boatrace.command.delete"))) {
                     noPerm(sender);
                     return false;
                 }
@@ -137,7 +136,7 @@ public class RaceCommandHandler implements TabExecutor {
                 }
                 break;
             case "setstart1": case "setstart2": case "setfinish1": case "setfinish2":
-                if (!(sender.hasPermission("boatrace.modify"))) {
+                if (!(sender.hasPermission("boatrace.command.modify"))) {
                     noPerm(sender);
                     return false;
                 }
@@ -174,7 +173,7 @@ public class RaceCommandHandler implements TabExecutor {
                 }
                 break;
             case "join":
-                if (!(sender.hasPermission("boatrace.join"))) {
+                if (!(sender.hasPermission("boatrace.command.join"))) {
                     noPerm(sender);
                     return false;
                 }
@@ -190,7 +189,7 @@ public class RaceCommandHandler implements TabExecutor {
                 }
                 break;
             case "start":
-                if (!(sender.hasPermission("boatrace.start"))) {
+                if (!(sender.hasPermission("boatrace.command.start"))) {
                     noPerm(sender);
                     return false;
                 }
@@ -202,7 +201,7 @@ public class RaceCommandHandler implements TabExecutor {
                 BoatRace.getInstance().getRaceManager().getSession(track).startCountdown(5);;
                 break;
             case "stop":
-                if (!(sender.hasPermission("boatrace.stop"))) {
+                if (!(sender.hasPermission("boatrace.command.stop"))) {
                     noPerm(sender);
                     return false;
                 }

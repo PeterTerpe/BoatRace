@@ -7,3 +7,22 @@ commands:
   race:
     permission: "boatrace.root"
     description: "This is a command in BoatRace plugin by PeterTerpe"
+permissions:
+  boatrace.command.create:
+    description: "To create a new track"
+    default: op
+  boatrace.command.modify:
+    description: "To modify a track"
+    default: op
+  boatrace.command.join:
+    description: "To join a race session"
+    default: notop
+  boatrace.command.start:
+    description: "To start a race session"
+    default: op
+  boatrace.command.stop:
+    description: "To force a race session to stop"
+    default: op
+  boatrace.command.delete:
+    description: "To delete a track"
+    default: op

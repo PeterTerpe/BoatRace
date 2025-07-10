@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
+
 import org.bukkit.Location;
 
 import java.util.Map;
@@ -13,7 +14,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.File;
 
 public class RaceTrackManager {
     private static RaceTrackManager instance;
@@ -55,7 +55,7 @@ public class RaceTrackManager {
         return tracks.values();
     }
     // Serialise track to json
-    public String serialize(RaceTrack track) {
+    public String serialize(RaceTrack track, String fileName) {
         return gson.toJson(track);
     }
 

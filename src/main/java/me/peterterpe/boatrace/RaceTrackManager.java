@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.Map;
@@ -64,6 +65,7 @@ public class RaceTrackManager {
         try (Reader reader = new FileReader(fileName)) {
             return gson.fromJson(reader, RaceTrack.class);
         } catch (Exception e) {
+            Bukkit.getLogger().severe("Failed to read " + fileName);
             return null;
         }
     }

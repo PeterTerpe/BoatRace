@@ -92,6 +92,7 @@ public class RaceCommandHandler implements TabExecutor {
             sender.sendMessage(Component.translatable("help.setfinish", Component.text("②")));
             sender.sendMessage(Component.translatable("help.join"));
             sender.sendMessage(Component.translatable("help.start"));
+            sender.sendMessage(Component.translatable("help.stop"));
             return true;
         }
         String sub = args[0].toLowerCase();

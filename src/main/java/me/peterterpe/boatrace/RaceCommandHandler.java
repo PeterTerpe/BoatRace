@@ -40,13 +40,9 @@ public class RaceCommandHandler implements TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         final List<String> validArg = new ArrayList<>();
         final List<String> permittedArg = new ArrayList<>();
-        if (args.length == 1) {
-            
-            return validArg;
-        }
         switch (args.length) {
-            case 0:
-                Map<String, String> subCommands = Map.of(
+            case 1:
+                final Map<String, String> subCommands = Map.of(
                     "create", "boatrace.create",
                     "start",  "boatrace.start",
                     "delete", "boatrace.delete",
@@ -55,8 +51,7 @@ public class RaceCommandHandler implements TabExecutor {
                     "setfinish1", "boatrace.modify",
                     "setfinish2", "boatrace.modify",
                     "list",   "boatrace.list",
-                    "join", "boatrace.join",
-                    "start", "boatrace.start"
+                    "join", "boatrace.join"
                 );
                 for (var entry : subCommands.entrySet()) {
                     if (!(sender instanceof Player player) || player.hasPermission(entry.getValue())) {
@@ -64,12 +59,13 @@ public class RaceCommandHandler implements TabExecutor {
                     }
                 }
                 StringUtil.copyPartialMatches(args[0], permittedArg, validArg);
-            case 1:
-                String sub = args[0].toLowerCase();
-                switch (sub) {
+                return validArg;
+            case 2:
+                switch (args[0]) {
                     case "create": case "delete": case "join": case "start":
                         List<String> trackNames = getAllTracks();
-                        StringUtil.copyPartialMatches(args[0], trackNames, validArg);
+                        StringUtil.copyPartialMatches(args[1], trackNames, validArg);
+                        return validArg;
                     case "setstart1": case "setstart2": case "setfinish1": case "setfinish2":
                         if (!(sender instanceof Player player)) {
                             return validArg;
@@ -80,11 +76,7 @@ public class RaceCommandHandler implements TabExecutor {
                             String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
                             return Collections.singletonList(coords);
                         }
-                    default:
-                        break;
                 }
-            default:
-                break;
         }
         return validArg;
     }

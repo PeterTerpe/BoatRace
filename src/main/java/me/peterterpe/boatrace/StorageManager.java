@@ -29,7 +29,7 @@ public class StorageManager {
     public void loadAll() {
         setup();
         for (File file : tracksDir.listFiles((d, name) -> name.endsWith(".json"))) {
-            RaceTrack track = RaceTrackManager.getInstance().deserialize(file.getName());
+            RaceTrack track = RaceTrackManager.getInstance().deserialize(tracksDir + "/" + file.getName());
             RaceTrackManager.getInstance().register(track);
         }
     }

@@ -42,17 +42,18 @@ public class RaceCommandHandler implements TabExecutor {
         final List<String> permittedArg = new ArrayList<>();
         switch (args.length) {
             case 1:
-                final Map<String, String> subCommands = Map.of(
-                    "create", "boatrace.command.create",
-                    "start",  "boatrace.command.start",
-                    "delete", "boatrace.command.delete",
-                    "setstart1", "boatrace.command.modify",
-                    "setstart2", "boatrace.command.modify",
-                    "setfinish1", "boatrace.command.modify",
-                    "setfinish2", "boatrace.command.modify",
-                    "list",   "boatrace.command.list",
-                    "join", "boatrace.command.join",
-                    "stop", "boatrace.command.stop"
+                final Map<String, String> subCommands = Map.ofEntries(
+                    Map.entry("create", "boatrace.command.create"),
+                    Map.entry("start",  "boatrace.command.start"),
+                    Map.entry("delete", "boatrace.command.delete"),
+                    Map.entry("setstart1", "boatrace.command.modify"),
+                    Map.entry("setstart2", "boatrace.command.modify"),
+                    Map.entry("setfinish1", "boatrace.command.modify"),
+                    Map.entry("setfinish2", "boatrace.command.modify"),
+                    Map.entry("hologram", "boatrace.command.modify"),
+                    Map.entry("list",   "boatrace.command.list"),
+                    Map.entry("join", "boatrace.command.join"),
+                    Map.entry("stop", "boatrace.command.stop")
                 );
                 for (var entry : subCommands.entrySet()) {
                     if (!(sender instanceof Player player) || player.hasPermission(entry.getValue())) {
@@ -212,6 +213,36 @@ public class RaceCommandHandler implements TabExecutor {
                 if (session == null) return noRes(sender);
                 BoatRace.getInstance().getRaceManager().endSession(track).forceStop();
                 break;
+            case "hologram":
+                if (args.length < 3) return needArg(sender);
+                track = RaceTrackManager.getInstance().get(args[1]);
+                if (track == null) return noTrack(sender);
+                switch (args[2]) {
+                    case "show":
+                        track.setShowHologram(true);
+                        break;
+                    case "hide":
+                        track.setShowHologram(false);
+                        break;
+                    case "setpos":
+                        if (args.length == 6) {
+                            try {
+                                double x = Double.parseDouble(args[3]);
+                                double y = Double.parseDouble(args[4]);
+                                double z = Double.parseDouble(args[5]);
+                                track.setHoloLocation(new Location(null, x, y, z));
+                            } catch (Exception e) {
+                                sender.sendMessage(Component.translatable("error.invalid.pos"));
+                            }
+                        } else {
+                            if (sender instanceof Player player) {
+                                track.setHoloLocation(player.getLocation());
+                            } else {
+                                return needArg(sender);
+                            }
+                        }
+                }
+                RaceTrackManager.getInstance().updateLeaderboardHologram(track);
             default: sender.sendMessage(Component.translatable("error.command.notfound"));
         }
         return true;

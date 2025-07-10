@@ -73,7 +73,6 @@ public class RaceTrackManager {
     // Update holograms
     public void updateLeaderboardHologram(RaceTrack track) {
         if (!track.hasHologram()) return;
-
         Location loc = track.getHoloLocation();
         List<String> lines = new ArrayList<>();
         lines.add("§6🏁 Top Times - " + track.getName());

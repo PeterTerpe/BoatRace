@@ -30,9 +30,15 @@ public class RaceSession {
         }
     }
 
-    public void broadcastToParticipants(Title title) {
+    public void broadcastTitleToParticipants(Title title) {
         for (Player p : participants) {
             BoatRace.getInstance().adventure().player(p).showTitle(title);
+        }
+    }
+
+    public void broadcastToParticipants(Component msg) {
+        for (Player p : participants) {
+            BoatRace.getInstance().adventure().player(p).sendMessage(msg);
         }
     }
 
@@ -43,14 +49,14 @@ public class RaceSession {
             return;
         }
         this.countdownActive = true; 
-        broadcastToParticipants(Title.title(Component.translatable("race.start.message", Component.text(track.getName())), Component.empty()));
+        broadcastTitleToParticipants(Title.title(Component.translatable("race.start.message", Component.text(track.getName())), Component.empty()));
         this.started = true;
         new BukkitRunnable() {
             int timer = seconds;
             @Override
             public void run() {
                 if (timer <= 0) {
-                    broadcastToParticipants(Title.title(Component.translatable("race.go"), Component.empty()));;
+                    broadcastTitleToParticipants(Title.title(Component.translatable("race.go"), Component.empty()));;
                     for (Player player : participants) {
                         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
                         startTimes.put(player, System.currentTimeMillis());
@@ -63,7 +69,7 @@ public class RaceSession {
                     countdownActive = false;
                     this.cancel();
                 } else {
-                    broadcastToParticipants(Title.title(Component.translatable("race.countdown", Component.text(timer)), Component.empty()));
+                    broadcastTitleToParticipants(Title.title(Component.translatable("race.countdown", Component.text(timer)), Component.empty()));
                     for (Player player : participants) {
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
                     }
@@ -81,7 +87,8 @@ public class RaceSession {
         if (!started) return;
         if (!startTimes.containsKey(player)) return;
         long elapsed = System.currentTimeMillis() - startTimes.get(player);
-        player.sendMessage(Component.translatable("race.finished", Component.text(track.getName()), Component.text(track.formatTime(elapsed))));
+        broadcastToParticipants(Component.translatable("race.player.finish", Component.text(player.getName()), Component.text(track.formatTime(elapsed))));
+        player.sendMessage(Component.translatable("race.finished"));
         if (track.addTime(player.getUniqueId(), elapsed)) {
             StorageManager.getInstance().saveTrack(track);
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);

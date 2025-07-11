@@ -2,7 +2,7 @@ package me.peterterpe.boatrace;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class RaceManager {
@@ -44,8 +44,8 @@ public class RaceManager {
      * 并结束会话（具体逻辑在 RaceListener 中调用）。
      */
     public void checkFinishIfNeeded(me.peterterpe.boatrace.listeners.RaceListener listener, 
-                                    org.bukkit.entity.Player player, 
-                                    org.bukkit.Location location) {
+                                    Player player, 
+                                    Location location) {
         for (RaceTrack track : RaceTrackManager.getInstance().getAll()) {
             if (!player.getWorld().getName().equals(track.getWorldName())) continue;
 

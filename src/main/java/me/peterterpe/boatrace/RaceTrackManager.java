@@ -7,6 +7,7 @@ import eu.decentsoftware.holograms.api.holograms.Hologram;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 
 import java.util.Map;
 import java.util.Collection;
@@ -78,7 +79,8 @@ public class RaceTrackManager {
         lines.add("§6🏁 Top Times - " + track.getName());
         int rank = 1;
         for (RaceResult topResult : track.getTopTimes()) {
-            lines.add(String.format("%d) %s %s", rank++, topResult.getPlayerName(), track.formatTime(topResult.getTimeInMs())));
+            OfflinePlayer player = Bukkit.getOfflinePlayer(topResult.getPlayerID());
+            lines.add(String.format("%d) %s %s", rank++, player.getName(), track.formatTime(topResult.getTimeInMs())));
             if (rank > 5) break;
         }
 

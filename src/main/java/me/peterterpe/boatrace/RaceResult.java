@@ -1,15 +1,17 @@
 package me.peterterpe.boatrace;
 
+import java.util.UUID;
+
 import org.bukkit.entity.Player;
 
 import com.google.gson.annotations.Expose;
 
 public class RaceResult {
-    @Expose private final String playerName;
+    @Expose private final UUID playerID;
     @Expose private final long timeInMs;
 
-    public RaceResult(String playerName, long timeInMs) {
-        this.playerName = playerName;
+    public RaceResult(UUID playerID, long timeInMs) {
+        this.playerID = playerID;
         this.timeInMs = timeInMs;
     }
 
@@ -18,8 +20,8 @@ public class RaceResult {
         return false;
     }
 
-    public String getPlayerName() {
-        return playerName;
+    public UUID getPlayerID() {
+        return playerID;
     }
 
     public long getTimeInMs() {

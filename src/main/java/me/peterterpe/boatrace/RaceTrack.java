@@ -8,6 +8,7 @@ import com.google.gson.annotations.Expose;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class RaceTrack {
     @Expose private String name;
@@ -72,8 +73,21 @@ public class RaceTrack {
     public boolean hasHologram() { return showHologram && holoLocation != null; }
     public boolean isShowHologram() { return showHologram; }
     public void setShowHologram(boolean show) { this.showHologram = show; }
-    public Location getHoloLocation() { return holoLocation; }
-    public void setHoloLocation(Location holoLocation) { this.holoLocation = new Location(Bukkit.getWorld(worldName), holoLocation.getX(), holoLocation.getY(), holoLocation.getZ()); }
+    // add track world to holoLocation if the holoLocation world is null
+    public Location getHoloLocation() {
+        if (holoLocation.getWorld() == null) {
+            return new Location(Bukkit.getWorld(worldName), holoLocation.getX(), holoLocation.getY(), holoLocation.getZ());
+        } else {
+            return holoLocation;
+        }
+    }
+    public void setHoloLocation(Location holoLocation) {
+        if (holoLocation.getWorld() == null) {
+            this.holoLocation = new Location(Bukkit.getWorld(worldName), holoLocation.getX(), holoLocation.getY(), holoLocation.getZ());
+        } else {
+            this.holoLocation = holoLocation;
+        }
+    }
     public List<RaceResult> getTopTimes() { return topTimes; }
     public void setTopTimes(List<RaceResult> times) { this.topTimes = times; }
 
@@ -97,13 +111,12 @@ public class RaceTrack {
         return box.contains(loc.toVector());
     }
 
-    /**
-     * 尝试将给定时间加入排行榜（Top5），若排入前5返回 true。
-     */
-    public boolean addTime(String playerName, long time) {
+    /* Try to add the result to track top5
+     * Returns True is success, false is fail */
+    public boolean addTime(UUID playerID, long time) {
         // check if player is on board
         for (int i = 0; i < topTimes.size(); i++) {
-            if (topTimes.get(i).getPlayerName() == playerName) {
+            if (topTimes.get(i).getPlayerID() == playerID) {
                 if (topTimes.get(i).getTimeInMs() > time) {
                     topTimes.remove(i);
                     break;
@@ -114,14 +127,14 @@ public class RaceTrack {
         }
         // if the scoreboard is empty
         if (topTimes.size() == 0) {
-            topTimes.add(new RaceResult(playerName, time));
+            topTimes.add(new RaceResult(playerID, time));
             return true;
         }
         for (int i = 0; i < topTimes.size(); i++) {
             if (topTimes.get(i).getTimeInMs() < time) {
                 continue;
             } else {
-                topTimes.add(i, new RaceResult(playerName, time));
+                topTimes.add(i, new RaceResult(playerID, time));
                 if (topTimes.size() > 5) {
                     topTimes = topTimes.subList(0, 4);
                 }

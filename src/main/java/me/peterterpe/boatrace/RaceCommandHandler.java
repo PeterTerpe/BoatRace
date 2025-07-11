@@ -18,6 +18,7 @@ import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 
 public class RaceCommandHandler implements TabExecutor {
+    private static final List<String> emptyStringList = new ArrayList<>();
     private void createTrack(String name, String world) {
         var manager = RaceTrackManager.getInstance();
         var track = new RaceTrack(name, world);
@@ -68,23 +69,19 @@ public class RaceCommandHandler implements TabExecutor {
                 return validArg;
             case 3:
                 if (Arrays.asList("setstart1", "setstart2", "setfinish1", "setfinish2").contains(args[0])) {
-                    if (!(sender instanceof Player player)) {
-                        return validArg;
-                    }
-                    Block target = player.getTargetBlockExact(5);  // get target position
-                    if (target != null) {
-                        Location loc = target.getLocation();
-                        String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
-                        return Collections.singletonList(coords);
-                    }
+                    return getTargetBlock(sender);
                 } else {
-                    if (args[0] == "hologram") {
+                    if (args[0].equals("hologram")) {
                         validArg.add("show");
                         validArg.add("hide");
                         validArg.add("setpos");
                         return validArg;
                     }
                 }
+            case 4:
+                if (args[0].equals("hologram")) {
+                    return getTargetBlock(sender);
+                    }
         }
         return validArg;
     }
@@ -266,6 +263,19 @@ public class RaceCommandHandler implements TabExecutor {
             default: sender.sendMessage(Component.translatable("error.command.notfound"));
         }
         return true;
+    }
+
+    private List<String> getTargetBlock(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            return emptyStringList;
+        }
+        Block target = player.getTargetBlockExact(5);  // get target position
+        if (target != null) {
+            Location loc = target.getLocation();
+            String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
+            return Collections.singletonList(coords);
+        }
+        return emptyStringList;
     }
 
     private boolean noPerm(CommandSender sender) {

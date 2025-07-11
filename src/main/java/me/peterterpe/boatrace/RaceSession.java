@@ -10,7 +10,7 @@ import java.util.*;
 
 public class RaceSession {
     private final RaceTrack track;
-    private final Set<Player> participants = new HashSet<>();
+    private final Set<UUID> participants = new HashSet<>();
     private final Map<Player, Long> startTimes = new HashMap<>();
     private boolean started = false;
     private Map<Player, RaceTimer> raceTimers = new HashMap<>();
@@ -24,20 +24,23 @@ public class RaceSession {
             player.sendMessage(Component.translatable("fail.join.started"));
             return;
         }
-        participants.add(player);
-        for (Player p : participants) {
+        participants.add(player.getUniqueId());
+        for (UUID uuid : participants) {
+            Player p = Bukkit.getPlayer(uuid);
             p.sendMessage(Component.translatable("success.race.join", Component.text(p.getName()), Component.text(track.getName())));   
         }
     }
 
     public void broadcastTitleToParticipants(Title title) {
-        for (Player p : participants) {
+        for (UUID uuid : participants) {
+            Player p = Bukkit.getPlayer(uuid);
             BoatRace.getInstance().adventure().player(p).showTitle(title);
         }
     }
 
     public void broadcastToParticipants(Component msg) {
-        for (Player p : participants) {
+        for (UUID uuid : participants) {
+            Player p = Bukkit.getPlayer(uuid);
             BoatRace.getInstance().adventure().player(p).sendMessage(msg);
         }
     }
@@ -57,11 +60,13 @@ public class RaceSession {
             public void run() {
                 if (timer <= 0) {
                     broadcastTitleToParticipants(Title.title(Component.translatable("race.go"), Component.empty()));;
-                    for (Player player : participants) {
+                    for (UUID uuid : participants) {
+                        Player player = Bukkit.getPlayer(uuid);
                         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
                         startTimes.put(player, System.currentTimeMillis());
                     }
-                    for (Player player : participants) {
+                    for (UUID uuid : participants) {
+                        Player player = Bukkit.getPlayer(uuid);
                         RaceTimer racetimer = new RaceTimer(player);
                         raceTimers.put(player, racetimer);
                         racetimer.start(); // start race timer
@@ -70,7 +75,8 @@ public class RaceSession {
                     this.cancel();
                 } else {
                     broadcastTitleToParticipants(Title.title(Component.translatable("race.countdown", Component.text(timer)), Component.empty()));
-                    for (Player player : participants) {
+                    for (UUID uuid : participants) {
+                        Player player = Bukkit.getPlayer(uuid);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
                     }
                     timer--;
@@ -94,18 +100,19 @@ public class RaceSession {
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);
             player.sendMessage(Component.translatable("top5.congrats", Component.text("The Argument")));
         }
-        stop(player);
+        stop(player.getUniqueId());
     }
     /* Remove all participants and their timers and set started to false */
     public void forceStop() {
-        for (Player player : participants) {
-            stop(player);
+        for (UUID uuid : participants) {
+            stop(uuid);
         }
     }
 
     /* Remove player from participants and their timer */
-    public void stop(Player player) {
-        participants.remove(player);
+    public void stop(UUID uuid) {
+        participants.remove(uuid);
+        Player player = Bukkit.getPlayer(uuid);
         startTimes.remove(player);
         raceTimers.get(player).stop();
         raceTimers.remove(player);
@@ -120,7 +127,8 @@ public class RaceSession {
     }
 
     public boolean hasPlayer(Player player) {
-        return participants.contains(player);
+        UUID uuid = player.getUniqueId();
+        return participants.contains(uuid);
     }
 
     
@@ -128,7 +136,7 @@ public class RaceSession {
         return countdownActive;
     }
 
-    public Set<Player> getParticipants() {
+    public Set<UUID> getParticipants() {
         return participants;
     }
 

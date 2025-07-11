@@ -19,7 +19,7 @@ public class CountdownMoveListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
-        RaceSession session = raceManager.getSessionFor(p);
+        RaceSession session = raceManager.getSessionFor(p.getUniqueId());
         if (session == null || !session.isCountdownActive()) return;
         Location to = e.getTo();
         if (!session.getTrack().isInStartRegion(to)) {

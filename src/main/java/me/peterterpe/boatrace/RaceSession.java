@@ -14,7 +14,7 @@ public class RaceSession {
     private final Map<Player, Long> startTimes = new HashMap<>();
     private boolean started = false;
     private Map<Player, RaceTimer> raceTimers = new HashMap<>();
-
+    private boolean countdownActive = false;
     public RaceSession(RaceTrack track) {
         this.track = track;
     }
@@ -42,6 +42,7 @@ public class RaceSession {
             Bukkit.getLogger().warning("No participants in track "+track.getName());
             return;
         }
+        this.countdownActive = true; 
         broadcastToParticipants(Title.title(Component.translatable("race.start.message", Component.text(track.getName())), Component.empty()));
         this.started = true;
         new BukkitRunnable() {
@@ -59,6 +60,7 @@ public class RaceSession {
                         raceTimers.put(player, racetimer);
                         racetimer.start(); // start race timer
                     }
+                    countdownActive = false;
                     this.cancel();
                 } else {
                     broadcastToParticipants(Title.title(Component.translatable("race.countdown", Component.text(timer)), Component.empty()));
@@ -113,4 +115,15 @@ public class RaceSession {
     public boolean hasPlayer(Player player) {
         return participants.contains(player);
     }
+
+    
+    public boolean isCountdownActive() {
+        return countdownActive;
+    }
+
+    public Set<Player> getParticipants() {
+        return participants;
+    }
+
+    public RaceTrack getTrack() { return track; }
 }

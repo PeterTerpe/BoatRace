@@ -3,9 +3,9 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.peterterpe.boatrace.listeners.RaceListener;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationStore;
 import net.kyori.adventure.util.UTF8ResourceBundleControl;

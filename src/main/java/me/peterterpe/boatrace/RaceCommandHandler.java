@@ -18,6 +18,7 @@ import java.util.Arrays;
 import net.kyori.adventure.text.Component;
 
 public class RaceCommandHandler implements TabExecutor {
+    private static final List<String> emptyStringList = new ArrayList<>();
     private void createTrack(String name, String world) {
         var manager = RaceTrackManager.getInstance();
         var track = new RaceTrack(name, world);
@@ -42,17 +43,18 @@ public class RaceCommandHandler implements TabExecutor {
         final List<String> permittedArg = new ArrayList<>();
         switch (args.length) {
             case 1:
-                final Map<String, String> subCommands = Map.of(
-                    "create", "boatrace.command.create",
-                    "start",  "boatrace.command.start",
-                    "delete", "boatrace.command.delete",
-                    "setstart1", "boatrace.command.modify",
-                    "setstart2", "boatrace.command.modify",
-                    "setfinish1", "boatrace.command.modify",
-                    "setfinish2", "boatrace.command.modify",
-                    "list",   "boatrace.command.list",
-                    "join", "boatrace.command.join",
-                    "stop", "boatrace.command.stop"
+                final Map<String, String> subCommands = Map.ofEntries(
+                    Map.entry("create", "boatrace.command.create"),
+                    Map.entry("start",  "boatrace.command.start"),
+                    Map.entry("delete", "boatrace.command.delete"),
+                    Map.entry("setstart1", "boatrace.command.modify"),
+                    Map.entry("setstart2", "boatrace.command.modify"),
+                    Map.entry("setfinish1", "boatrace.command.modify"),
+                    Map.entry("setfinish2", "boatrace.command.modify"),
+                    Map.entry("hologram", "boatrace.command.modify"),
+                    Map.entry("list",   "boatrace.command.list"),
+                    Map.entry("join", "boatrace.command.join"),
+                    Map.entry("stop", "boatrace.command.stop")
                 );
                 for (var entry : subCommands.entrySet()) {
                     if (!(sender instanceof Player player) || player.hasPermission(entry.getValue())) {
@@ -67,16 +69,19 @@ public class RaceCommandHandler implements TabExecutor {
                 return validArg;
             case 3:
                 if (Arrays.asList("setstart1", "setstart2", "setfinish1", "setfinish2").contains(args[0])) {
-                    if (!(sender instanceof Player player)) {
+                    return getTargetBlock(sender);
+                } else {
+                    if (args[0].equals("hologram")) {
+                        validArg.add("show");
+                        validArg.add("hide");
+                        validArg.add("setpos");
                         return validArg;
                     }
-                    Block target = player.getTargetBlockExact(5);  // get target position
-                    if (target != null) {
-                        Location loc = target.getLocation();
-                        String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
-                        return Collections.singletonList(coords);
-                    }
                 }
+            case 4:
+                if (args[0].equals("hologram")) {
+                    return getTargetBlock(sender);
+                    }
         }
         return validArg;
     }
@@ -212,9 +217,65 @@ public class RaceCommandHandler implements TabExecutor {
                 if (session == null) return noRes(sender);
                 BoatRace.getInstance().getRaceManager().endSession(track).forceStop();
                 break;
+            case "hologram":
+                if (args.length < 3) return needArg(sender);
+                track = RaceTrackManager.getInstance().get(args[1]);
+                if (track == null) return noTrack(sender);
+                switch (args[2]) {
+                    case "show":
+                        track.setShowHologram(true);
+                        sender.sendMessage(Component.translatable("success.hologram.show"));
+                        break;
+                    case "hide":
+                        track.setShowHologram(false);
+                        sender.sendMessage(Component.translatable("success.hologram.hide"));
+                        break;
+                    case "setpos":
+                        if (args.length == 6) {
+                            try {
+                                double x = Double.parseDouble(args[3]);
+                                double y = Double.parseDouble(args[4]);
+                                double z = Double.parseDouble(args[5]);
+                                track.setHoloLocation(new Location(null, x, y, z));
+                                sender.sendMessage(Component.translatable("success.hologram.setpos", Component.text(
+                                    Double.toString(x) + " " + 
+                                    Double.toString(y) + " " + 
+                                    Double.toString(z))));
+                            } catch (Exception e) {
+                                sender.sendMessage(Component.translatable("error.invalid.pos"));
+                            }
+                        } else {
+                            if (sender instanceof Player player) {
+                                Location location = player.getLocation();
+                                track.setHoloLocation(location);
+                                sender.sendMessage(Component.translatable("success.hologram.setpos", Component.text(
+                                    Double.toString(location.getX()) + " " + 
+                                    Double.toString(location.getY()) + " " + 
+                                    Double.toString(location.getZ()))));
+                            } else {
+                                return needArg(sender);
+                            }
+                        }
+                }
+                RaceTrackManager.getInstance().updateLeaderboardHologram(track);
+                StorageManager.getInstance().saveTrack(track);
+                break;
             default: sender.sendMessage(Component.translatable("error.command.notfound"));
         }
         return true;
+    }
+
+    private List<String> getTargetBlock(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            return emptyStringList;
+        }
+        Block target = player.getTargetBlockExact(5);  // get target position
+        if (target != null) {
+            Location loc = target.getLocation();
+            String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
+            return Collections.singletonList(coords);
+        }
+        return emptyStringList;
     }
 
     private boolean noPerm(CommandSender sender) {

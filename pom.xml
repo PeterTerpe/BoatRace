@@ -6,7 +6,7 @@
 
     <groupId>me.peterterpe.boatrace</groupId>
     <artifactId>boatrace</artifactId>
-    <version>v0.1.3-alpha</version>
+    <version>v0.2.0-alpha</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

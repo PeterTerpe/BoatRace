@@ -77,6 +77,13 @@ public class RaceCommandHandler implements TabExecutor {
                         String coords = loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ();
                         return Collections.singletonList(coords);
                     }
+                } else {
+                    if (args[0] == "hologram") {
+                        validArg.add("show");
+                        validArg.add("hide");
+                        validArg.add("setpos");
+                        return validArg;
+                    }
                 }
         }
         return validArg;
@@ -220,9 +227,11 @@ public class RaceCommandHandler implements TabExecutor {
                 switch (args[2]) {
                     case "show":
                         track.setShowHologram(true);
+                        sender.sendMessage(Component.translatable("success.hologram.show"));
                         break;
                     case "hide":
                         track.setShowHologram(false);
+                        sender.sendMessage(Component.translatable("success.hologram.hide"));
                         break;
                     case "setpos":
                         if (args.length == 6) {
@@ -231,18 +240,29 @@ public class RaceCommandHandler implements TabExecutor {
                                 double y = Double.parseDouble(args[4]);
                                 double z = Double.parseDouble(args[5]);
                                 track.setHoloLocation(new Location(null, x, y, z));
+                                sender.sendMessage(Component.translatable("success.hologram.setpos", Component.text(
+                                    Double.toString(x) + " " + 
+                                    Double.toString(y) + " " + 
+                                    Double.toString(z))));
                             } catch (Exception e) {
                                 sender.sendMessage(Component.translatable("error.invalid.pos"));
                             }
                         } else {
                             if (sender instanceof Player player) {
-                                track.setHoloLocation(player.getLocation());
+                                Location location = player.getLocation();
+                                track.setHoloLocation(location);
+                                sender.sendMessage(Component.translatable("success.hologram.setpos", Component.text(
+                                    Double.toString(location.getX()) + " " + 
+                                    Double.toString(location.getY()) + " " + 
+                                    Double.toString(location.getZ()))));
                             } else {
                                 return needArg(sender);
                             }
                         }
                 }
                 RaceTrackManager.getInstance().updateLeaderboardHologram(track);
+                StorageManager.getInstance().saveTrack(track);
+                break;
             default: sender.sendMessage(Component.translatable("error.command.notfound"));
         }
         return true;

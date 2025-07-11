@@ -1,5 +1,6 @@
 package me.peterterpe.boatrace;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.util.BoundingBox;
 
@@ -72,7 +73,7 @@ public class RaceTrack {
     public boolean isShowHologram() { return showHologram; }
     public void setShowHologram(boolean show) { this.showHologram = show; }
     public Location getHoloLocation() { return holoLocation; }
-    public void setHoloLocation(Location holoLocation) { this.holoLocation = holoLocation; }
+    public void setHoloLocation(Location holoLocation) { this.holoLocation = new Location(Bukkit.getWorld(worldName), holoLocation.getX(), holoLocation.getY(), holoLocation.getZ()); }
     public List<RaceResult> getTopTimes() { return topTimes; }
     public void setTopTimes(List<RaceResult> times) { this.topTimes = times; }
 

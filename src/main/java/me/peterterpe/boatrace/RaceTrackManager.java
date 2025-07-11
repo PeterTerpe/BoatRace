@@ -78,7 +78,7 @@ public class RaceTrackManager {
         lines.add("§6🏁 Top Times - " + track.getName());
         int rank = 1;
         for (RaceResult topResult : track.getTopTimes()) {
-            lines.add(String.format("%d) %s", rank++, track.formatTime(topResult.getTimeInMs())));
+            lines.add(String.format("%d) %s %s", rank++, topResult.getPlayerName(), track.formatTime(topResult.getTimeInMs())));
             if (rank > 5) break;
         }
 

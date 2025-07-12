@@ -31,6 +31,7 @@ public class StorageManager {
         for (File file : tracksDir.listFiles((d, name) -> name.endsWith(".json"))) {
             RaceTrack track = RaceTrackManager.getInstance().deserialize(tracksDir + "/" + file.getName());
             RaceTrackManager.getInstance().register(track);
+            RaceTrackManager.getInstance().updateLeaderboardHologram(track);
         }
     }
 

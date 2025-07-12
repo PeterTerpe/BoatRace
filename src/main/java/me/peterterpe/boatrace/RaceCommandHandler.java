@@ -91,14 +91,15 @@ public class RaceCommandHandler implements TabExecutor {
         if (args.length == 0) {
             sender.sendMessage(Component.translatable("help.head"));
             sender.sendMessage(Component.translatable("help.create"));
-            sender.sendMessage(Component.translatable("help.create"));
-            sender.sendMessage(Component.translatable("help.setstart", Component.text("①")));
-            sender.sendMessage(Component.translatable("help.setstart", Component.text("②")));
-            sender.sendMessage(Component.translatable("help.setfinish", Component.text("①")));
-            sender.sendMessage(Component.translatable("help.setfinish", Component.text("②")));
+            sender.sendMessage(Component.translatable("help.delete"));
+            sender.sendMessage(Component.translatable("help.setstart", Component.text("1")));
+            sender.sendMessage(Component.translatable("help.setstart", Component.text("2")));
+            sender.sendMessage(Component.translatable("help.setfinish", Component.text("1")));
+            sender.sendMessage(Component.translatable("help.setfinish", Component.text("2")));
             sender.sendMessage(Component.translatable("help.join"));
             sender.sendMessage(Component.translatable("help.start"));
             sender.sendMessage(Component.translatable("help.stop"));
+            sender.sendMessage(Component.translatable("help.hologram"));
             return true;
         }
         String sub = args[0].toLowerCase();
@@ -113,7 +114,7 @@ public class RaceCommandHandler implements TabExecutor {
                         double y = Double.parseDouble(args[3]);
                         double z = Double.parseDouble(args[4]);
                         track.setSpawn(new Location(null, x, y, z));
-                        sender.sendMessage(Component.translatable("success.track.setspawn", Component.text(
+                        sender.sendMessage(Component.translatable("success.spawn.setpos", Component.text(
                             Double.toString(x) + " " + 
                             Double.toString(y) + " " + 
                             Double.toString(z))));
@@ -206,7 +207,7 @@ public class RaceCommandHandler implements TabExecutor {
                             Location location = new Location(Bukkit.getWorld(track.getWorldName()), x, y, z);
                             track.setPoint(pointMap.get(sub), location);
                             StorageManager.getInstance().saveTrack(track);
-                            sender.sendMessage(Component.translatable("track."+sub+".success"));
+                            sender.sendMessage(Component.translatable("track.modify.success", Component.text(track.getName())));
                         } catch (Exception e) {
                             sender.sendMessage(Component.translatable("error.invalid.pos"));
                             return false;

@@ -120,12 +120,8 @@ public class RaceTrack {
         boolean added = false;
         // check if player is on board
         for (int i = 0; i < topTimes.size(); i++) {
-            // Debug message
-            Bukkit.getLogger().warning(topTimes.get(i).getPlayerID().toString());
             if (topTimes.get(i).getPlayerID().equals(playerID)) {
                 if (topTimes.get(i).getTimeInMs() > time) {
-                    // Debug message
-                    Bukkit.getLogger().warning(topTimes.get(i).getPlayerID().toString());
                     topTimes.remove(i);
                     break;
                 } else {

@@ -64,7 +64,7 @@ public class RaceSession {
                     broadcastTitleToParticipants(Title.title(Component.translatable("race.go"), Component.empty()));;
                     for (UUID uuid : participants) {
                         Player player = Bukkit.getPlayer(uuid);
-                        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+                        player.playSound(player.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_1, 1f, 1f);
                         startTimes.put(player, System.currentTimeMillis());
                     }
                     for (UUID uuid : participants) {
@@ -94,6 +94,7 @@ public class RaceSession {
     public void checkFinish(Player player) {
         if (!started) return;
         if (!startTimes.containsKey(player)) return;
+        player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
         long elapsed = System.currentTimeMillis() - startTimes.get(player);
         broadcastToParticipants(Component.translatable("race.player.finish", Component.text(player.getName()), Component.text(track.formatTime(elapsed))));
         player.sendMessage(Component.translatable("race.finished"));
@@ -128,7 +129,6 @@ public class RaceSession {
     private void tpAllStartRegion() {
         Location spawn = track.getSpawn();
         if (spawn == null) return;
-        Bukkit.getLogger().warning("Entered not null branch!");
         Location loc = new Location(Bukkit.getWorld(track.getWorldName()), spawn.getX(), spawn.getY(), spawn.getZ());
         for (UUID uuid : participants) {
             Player player = Bukkit.getPlayer(uuid);

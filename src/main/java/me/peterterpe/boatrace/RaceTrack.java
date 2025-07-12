@@ -19,6 +19,7 @@ public class RaceTrack {
     @Expose private Location startB;
     @Expose private Location finishA;
     @Expose private Location finishB;
+    @Expose private Location spawn;
 
     // 全息图展示位置与开关
     @Expose private boolean showHologram;
@@ -62,6 +63,8 @@ public class RaceTrack {
     public void setName(String name) { this.name = name; }
     public String getWorldName() { return worldName; }
     public void setWorldName(String worldName) { this.worldName = worldName; }
+    public Location getSpawn() { return spawn; }
+    public void setSpawn(Location spawn) { this.spawn = spawn; }
     public Location getStartA() { return startA; }
     public void setStartA(Location startA) { this.startA = startA; }
     public Location getStartB() { return startB; }

@@ -1,6 +1,7 @@
 package me.peterterpe.boatrace;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -51,8 +52,9 @@ public class RaceSession {
             Bukkit.getLogger().warning("No participants in track "+track.getName());
             return;
         }
-        this.countdownActive = true; 
-        broadcastTitleToParticipants(Title.title(Component.translatable("race.start.message", Component.text(track.getName())), Component.empty()));
+        this.countdownActive = true;
+        tpAllStartRegion();
+        broadcastToParticipants(Component.translatable("race.start.message", Component.text(track.getName())));
         this.started = true;
         new BukkitRunnable() {
             int timer = seconds;
@@ -102,14 +104,14 @@ public class RaceSession {
         }
         stop(player.getUniqueId());
     }
-    /* Remove all participants and their timers and set started to false */
+    /** Remove all participants and their timers and set started to false */
     public void forceStop() {
         for (UUID uuid : participants) {
             stop(uuid);
         }
     }
 
-    /* Remove player from participants and their timer */
+    /** Remove player from participants and their timer */
     public void stop(UUID uuid) {
         participants.remove(uuid);
         Player player = Bukkit.getPlayer(uuid);
@@ -119,6 +121,20 @@ public class RaceSession {
         // Change the status to not started to allow future joins.
         if (participants.isEmpty()) {
             this.started = false;
+        }
+    }
+
+    /** tp participants to spawn if they are outside the start region */
+    private void tpAllStartRegion() {
+        Location spawn = track.getSpawn();
+        if (spawn == null) return;
+        Bukkit.getLogger().warning("Entered not null branch!");
+        Location loc = new Location(Bukkit.getWorld(track.getWorldName()), spawn.getX(), spawn.getY(), spawn.getZ());
+        for (UUID uuid : participants) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (!track.isInStartRegion(player.getLocation())) {
+                player.teleport(loc);
+            }
         }
     }
 

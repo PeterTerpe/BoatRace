@@ -26,10 +26,7 @@ public class RaceSession {
             return;
         }
         participants.add(player.getUniqueId());
-        for (UUID uuid : participants) {
-            Player p = Bukkit.getPlayer(uuid);
-            p.sendMessage(Component.translatable("success.race.join", Component.text(p.getName()), Component.text(track.getName())));   
-        }
+        broadcastToParticipants(Component.translatable("success.race.join", Component.text(player.getName()), Component.text(track.getName())));
     }
 
     public void broadcastTitleToParticipants(Title title) {

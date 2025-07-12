@@ -54,7 +54,8 @@ public class RaceCommandHandler implements TabExecutor {
                     Map.entry("hologram", "boatrace.command.modify"),
                     Map.entry("list",   "boatrace.command.list"),
                     Map.entry("join", "boatrace.command.join"),
-                    Map.entry("stop", "boatrace.command.stop")
+                    Map.entry("stop", "boatrace.command.stop"),
+                    Map.entry("setspawn", "boatrace.command.modify")
                 );
                 for (var entry : subCommands.entrySet()) {
                     if (!(sender instanceof Player player) || player.hasPermission(entry.getValue())) {
@@ -68,7 +69,7 @@ public class RaceCommandHandler implements TabExecutor {
                 StringUtil.copyPartialMatches(args[1], trackNames, validArg);
                 return validArg;
             case 3:
-                if (Arrays.asList("setstart1", "setstart2", "setfinish1", "setfinish2").contains(args[0])) {
+                if (Arrays.asList("setstart1", "setstart2", "setfinish1", "setfinish2", "setspawn").contains(args[0])) {
                     return getTargetBlock(sender);
                 } else {
                     if (args[0].equals("hologram")) {
@@ -102,13 +103,48 @@ public class RaceCommandHandler implements TabExecutor {
         }
         String sub = args[0].toLowerCase();
         switch (sub) {
-            case "create": 
+            case "setspawn":
+                if (args.length < 2) return needArg(sender);
+                RaceTrack track = RaceTrackManager.getInstance().get(args[1]);
+                if (track == null) return noTrack(sender);
+                if (args.length == 5) {
+                    try {
+                        double x = Double.parseDouble(args[2]);
+                        double y = Double.parseDouble(args[3]);
+                        double z = Double.parseDouble(args[4]);
+                        track.setSpawn(new Location(null, x, y, z));
+                        sender.sendMessage(Component.translatable("success.track.setspawn", Component.text(
+                            Double.toString(x) + " " + 
+                            Double.toString(y) + " " + 
+                            Double.toString(z))));
+                    } catch (Exception e) {
+                        sender.sendMessage(Component.translatable("error.invalid.pos"));
+                    }
+                } else {
+                    if (sender instanceof Player player) {
+                        Location location = player.getLocation();
+                        track.setSpawn(location);
+                        sender.sendMessage(Component.translatable("success.spawn.setpos", Component.text(
+                            Double.toString(location.getX()) + " " + 
+                            Double.toString(location.getY()) + " " + 
+                            Double.toString(location.getZ()))));
+                    } else {
+                        return needArg(sender);
+                    }
+                }
+                break;
+            case "create":
                 if (!(sender.hasPermission("boatrace.command.create"))) {
                     noPerm(sender);
                     return false;
                 }
                 if (args.length < 2) {
                     needArg(sender);
+                    return false;
+                }
+                track = RaceTrackManager.getInstance().get(args[1]);
+                if (!(track == null)) {
+                    sender.sendMessage(Component.translatable("error.track.exists"));
                     return false;
                 }
                 if (args.length == 2) {
@@ -122,7 +158,7 @@ public class RaceCommandHandler implements TabExecutor {
                 } else {
                     createTrack(args[1], args[2]);
                 }
-                sender.sendMessage(Component.translatable("track.create.success", Component.text(args[1])));
+                sender.sendMessage(Component.translatable("success.track.create", Component.text(args[1])));
                 break;
             case "delete": 
                 if (!(sender.hasPermission("boatrace.command.delete"))) {
@@ -150,7 +186,7 @@ public class RaceCommandHandler implements TabExecutor {
                 if (args.length < 2) return needArg(sender);
                 if (args.length == 2) {
                     if (sender instanceof Player player) {
-                        RaceTrack track = RaceTrackManager.getInstance().get(args[1]);
+                        track = RaceTrackManager.getInstance().get(args[1]);
                         if (track == null) return noTrack(sender);
                         track.setPoint(pointMap.get(sub), player.getLocation());
                         StorageManager.getInstance().saveTrack(track);
@@ -165,7 +201,7 @@ public class RaceCommandHandler implements TabExecutor {
                             double x = Double.parseDouble(args[2]);
                             double y = Double.parseDouble(args[3]);
                             double z = Double.parseDouble(args[4]);
-                            RaceTrack track = RaceTrackManager.getInstance().get(args[1]);
+                            track = RaceTrackManager.getInstance().get(args[1]);
                             if (track == null) return noTrack(sender);
                             Location location = new Location(Bukkit.getWorld(track.getWorldName()), x, y, z);
                             track.setPoint(pointMap.get(sub), location);
@@ -184,7 +220,7 @@ public class RaceCommandHandler implements TabExecutor {
                     return false;
                 }
                 if (sender instanceof Player p) {
-                    var track = RaceTrackManager.getInstance().get(args[1]);
+                    track = RaceTrackManager.getInstance().get(args[1]);
                     if (track == null) return noTrack(p);
                     BoatRace.getInstance().getRaceManager().startSessionIfAbsent(track);
                     RaceSession session = BoatRace.getInstance().getRaceManager().getSession(track);
@@ -200,7 +236,7 @@ public class RaceCommandHandler implements TabExecutor {
                     return false;
                 }
                 if (args.length < 2) return needArg(sender);
-                var track = RaceTrackManager.getInstance().get(args[1]);
+                track = RaceTrackManager.getInstance().get(args[1]);
                 if (track == null) return noTrack(sender);
                 RaceSession session = BoatRace.getInstance().getRaceManager().getSession(track);
                 if (session == null) return noRes(sender);

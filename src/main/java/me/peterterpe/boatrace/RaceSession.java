@@ -1,6 +1,7 @@
 package me.peterterpe.boatrace;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,11 +11,11 @@ import java.util.*;
 
 public class RaceSession {
     private final RaceTrack track;
-    private final Set<Player> participants = new HashSet<>();
+    private final Set<UUID> participants = new HashSet<>();
     private final Map<Player, Long> startTimes = new HashMap<>();
     private boolean started = false;
     private Map<Player, RaceTimer> raceTimers = new HashMap<>();
-
+    private boolean countdownActive = false;
     public RaceSession(RaceTrack track) {
         this.track = track;
     }
@@ -24,15 +25,24 @@ public class RaceSession {
             player.sendMessage(Component.translatable("fail.join.started"));
             return;
         }
-        participants.add(player);
-        for (Player p : participants) {
+        participants.add(player.getUniqueId());
+        for (UUID uuid : participants) {
+            Player p = Bukkit.getPlayer(uuid);
             p.sendMessage(Component.translatable("success.race.join", Component.text(p.getName()), Component.text(track.getName())));   
         }
     }
 
-    public void broadcastToParticipants(Title title) {
-        for (Player p : participants) {
+    public void broadcastTitleToParticipants(Title title) {
+        for (UUID uuid : participants) {
+            Player p = Bukkit.getPlayer(uuid);
             BoatRace.getInstance().adventure().player(p).showTitle(title);
+        }
+    }
+
+    public void broadcastToParticipants(Component msg) {
+        for (UUID uuid : participants) {
+            Player p = Bukkit.getPlayer(uuid);
+            BoatRace.getInstance().adventure().player(p).sendMessage(msg);
         }
     }
 
@@ -42,27 +52,33 @@ public class RaceSession {
             Bukkit.getLogger().warning("No participants in track "+track.getName());
             return;
         }
-        broadcastToParticipants(Title.title(Component.translatable("race.start.message", Component.text(track.getName())), Component.empty()));
+        this.countdownActive = true;
+        tpAllStartRegion();
+        broadcastToParticipants(Component.translatable("race.start.message", Component.text(track.getName())));
         this.started = true;
         new BukkitRunnable() {
             int timer = seconds;
             @Override
             public void run() {
                 if (timer <= 0) {
-                    broadcastToParticipants(Title.title(Component.translatable("race.go"), Component.empty()));;
-                    for (Player player : participants) {
+                    broadcastTitleToParticipants(Title.title(Component.translatable("race.go"), Component.empty()));;
+                    for (UUID uuid : participants) {
+                        Player player = Bukkit.getPlayer(uuid);
                         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
                         startTimes.put(player, System.currentTimeMillis());
                     }
-                    for (Player player : participants) {
+                    for (UUID uuid : participants) {
+                        Player player = Bukkit.getPlayer(uuid);
                         RaceTimer racetimer = new RaceTimer(player);
                         raceTimers.put(player, racetimer);
                         racetimer.start(); // start race timer
                     }
+                    countdownActive = false;
                     this.cancel();
                 } else {
-                    broadcastToParticipants(Title.title(Component.translatable("race.countdown", Component.text(timer)), Component.empty()));
-                    for (Player player : participants) {
+                    broadcastTitleToParticipants(Title.title(Component.translatable("race.countdown", Component.text(timer)), Component.empty()));
+                    for (UUID uuid : participants) {
+                        Player player = Bukkit.getPlayer(uuid);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
                     }
                     timer--;
@@ -79,24 +95,26 @@ public class RaceSession {
         if (!started) return;
         if (!startTimes.containsKey(player)) return;
         long elapsed = System.currentTimeMillis() - startTimes.get(player);
-        player.sendMessage(Component.translatable("race.finished", Component.text(track.getName()), Component.text(track.formatTime(elapsed))));
+        broadcastToParticipants(Component.translatable("race.player.finish", Component.text(player.getName()), Component.text(track.formatTime(elapsed))));
+        player.sendMessage(Component.translatable("race.finished"));
         if (track.addTime(player.getUniqueId(), elapsed)) {
             StorageManager.getInstance().saveTrack(track);
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);
             player.sendMessage(Component.translatable("top5.congrats", Component.text("The Argument")));
         }
-        stop(player);
+        stop(player.getUniqueId());
     }
-    /* Remove all participants and their timers and set started to false */
+    /** Remove all participants and their timers and set started to false */
     public void forceStop() {
-        for (Player player : participants) {
-            stop(player);
+        for (UUID uuid : participants) {
+            stop(uuid);
         }
     }
 
-    /* Remove player from participants and their timer */
-    public void stop(Player player) {
-        participants.remove(player);
+    /** Remove player from participants and their timer */
+    public void stop(UUID uuid) {
+        participants.remove(uuid);
+        Player player = Bukkit.getPlayer(uuid);
         startTimes.remove(player);
         raceTimers.get(player).stop();
         raceTimers.remove(player);
@@ -106,11 +124,37 @@ public class RaceSession {
         }
     }
 
+    /** tp participants to spawn if they are outside the start region */
+    private void tpAllStartRegion() {
+        Location spawn = track.getSpawn();
+        if (spawn == null) return;
+        Bukkit.getLogger().warning("Entered not null branch!");
+        Location loc = new Location(Bukkit.getWorld(track.getWorldName()), spawn.getX(), spawn.getY(), spawn.getZ());
+        for (UUID uuid : participants) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (!track.isInStartRegion(player.getLocation())) {
+                player.teleport(loc);
+            }
+        }
+    }
+
     public boolean isRunning() {
         return started;
     }
 
     public boolean hasPlayer(Player player) {
-        return participants.contains(player);
+        UUID uuid = player.getUniqueId();
+        return participants.contains(uuid);
     }
+
+    
+    public boolean isCountdownActive() {
+        return countdownActive;
+    }
+
+    public Set<UUID> getParticipants() {
+        return participants;
+    }
+
+    public RaceTrack getTrack() { return track; }
 }

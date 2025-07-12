@@ -2,6 +2,9 @@ package me.peterterpe.boatrace;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import java.util.UUID;
 
 public class RaceManager {
     // 每个赛道 (RaceTrack) 正对应一个正在进行的比赛 (RaceSession)
@@ -21,6 +24,15 @@ public class RaceManager {
         return activeSessions.get(track);
     }
 
+    public RaceSession getSessionFor(UUID playerID) {
+        for (RaceSession session : activeSessions.values()) {
+            if (session.getParticipants().contains(playerID)) {
+                return session;
+            }
+        }
+        return null;
+    }
+
     /**
      * 在比赛结束或取消时调用，移除该赛道的会话。
      */
@@ -32,9 +44,9 @@ public class RaceManager {
      * 快捷方法，根据玩家当前所在位置检测是否完成赛道，
      * 并结束会话（具体逻辑在 RaceListener 中调用）。
      */
-    public void checkFinishIfNeeded(me.peterterpe.boatrace.RaceListener listener, 
-                                    org.bukkit.entity.Player player, 
-                                    org.bukkit.Location location) {
+    public void checkFinishIfNeeded(me.peterterpe.boatrace.listeners.RaceListener listener, 
+                                    Player player, 
+                                    Location location) {
         for (RaceTrack track : RaceTrackManager.getInstance().getAll()) {
             if (!player.getWorld().getName().equals(track.getWorldName())) continue;
 

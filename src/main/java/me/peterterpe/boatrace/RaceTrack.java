@@ -19,6 +19,7 @@ public class RaceTrack {
     @Expose private Location startB;
     @Expose private Location finishA;
     @Expose private Location finishB;
+    @Expose private Location spawn;
 
     // 全息图展示位置与开关
     @Expose private boolean showHologram;
@@ -62,6 +63,8 @@ public class RaceTrack {
     public void setName(String name) { this.name = name; }
     public String getWorldName() { return worldName; }
     public void setWorldName(String worldName) { this.worldName = worldName; }
+    public Location getSpawn() { return spawn; }
+    public void setSpawn(Location spawn) { this.spawn = spawn; }
     public Location getStartA() { return startA; }
     public void setStartA(Location startA) { this.startA = startA; }
     public Location getStartB() { return startB; }
@@ -114,10 +117,15 @@ public class RaceTrack {
     /* Try to add the result to track top5
      * Returns True is success, false is fail */
     public boolean addTime(UUID playerID, long time) {
+        boolean added = false;
         // check if player is on board
         for (int i = 0; i < topTimes.size(); i++) {
-            if (topTimes.get(i).getPlayerID() == playerID) {
+            // Debug message
+            Bukkit.getLogger().warning(topTimes.get(i).getPlayerID().toString());
+            if (topTimes.get(i).getPlayerID().equals(playerID)) {
                 if (topTimes.get(i).getTimeInMs() > time) {
+                    // Debug message
+                    Bukkit.getLogger().warning(topTimes.get(i).getPlayerID().toString());
                     topTimes.remove(i);
                     break;
                 } else {
@@ -128,20 +136,26 @@ public class RaceTrack {
         // if the scoreboard is empty
         if (topTimes.size() == 0) {
             topTimes.add(new RaceResult(playerID, time));
-            return true;
+            added = true;
+            return added;
         }
         for (int i = 0; i < topTimes.size(); i++) {
             if (topTimes.get(i).getTimeInMs() < time) {
                 continue;
             } else {
                 topTimes.add(i, new RaceResult(playerID, time));
-                if (topTimes.size() > 5) {
-                    topTimes = topTimes.subList(0, 4);
-                }
-                return true;
+                added = true;
+                break;
             }
         }
-        return false;
+        if (!added) {
+            topTimes.add(new RaceResult(playerID, time));
+            added = true;
+        }
+        if (topTimes.size() > 5) {
+            topTimes.subList(5, topTimes.size()).clear();
+        }
+        return added;
     }
     // Format milisec to mm:ss.SSS
     public String formatTime(long millis) {

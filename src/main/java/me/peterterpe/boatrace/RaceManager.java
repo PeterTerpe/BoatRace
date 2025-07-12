@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import java.util.UUID;
 
 public class RaceManager {
     // 每个赛道 (RaceTrack) 正对应一个正在进行的比赛 (RaceSession)
@@ -23,9 +24,9 @@ public class RaceManager {
         return activeSessions.get(track);
     }
 
-    public RaceSession getSessionFor(Player player) {
+    public RaceSession getSessionFor(UUID playerID) {
         for (RaceSession session : activeSessions.values()) {
-            if (session.getParticipants().contains(player)) {
+            if (session.getParticipants().contains(playerID)) {
                 return session;
             }
         }

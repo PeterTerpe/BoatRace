@@ -129,7 +129,6 @@ public class RaceSession {
     private void tpAllStartRegion() {
         Location spawn = track.getSpawn();
         if (spawn == null) return;
-        Bukkit.getLogger().warning("Entered not null branch!");
         Location loc = new Location(Bukkit.getWorld(track.getWorldName()), spawn.getX(), spawn.getY(), spawn.getZ());
         for (UUID uuid : participants) {
             Player player = Bukkit.getPlayer(uuid);

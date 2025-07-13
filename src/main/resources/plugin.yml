@@ -16,7 +16,7 @@ permissions:
     default: op
   boatrace.command.join:
     description: "To join a race session"
-    default: notop
+    default: true
   boatrace.command.start:
     description: "To start a race session"
     default: op

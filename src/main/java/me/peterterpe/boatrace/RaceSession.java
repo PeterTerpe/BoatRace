@@ -12,6 +12,7 @@ import java.util.*;
 public class RaceSession {
     private final RaceTrack track;
     private final Set<UUID> participants = new HashSet<>();
+    private final Set<UUID> participated = new HashSet<>();
     private final Map<Player, Long> startTimes = new HashMap<>();
     private boolean started = false;
     private Map<Player, RaceTimer> raceTimers = new HashMap<>();
@@ -26,10 +27,8 @@ public class RaceSession {
             return;
         }
         participants.add(player.getUniqueId());
-        for (UUID uuid : participants) {
-            Player p = Bukkit.getPlayer(uuid);
-            p.sendMessage(Component.translatable("success.race.join", Component.text(p.getName()), Component.text(track.getName())));   
-        }
+        participated.add(player.getUniqueId());
+        broadcastToParticipants(Component.translatable("success.race.join", Component.text(player.getName()), Component.text(track.getName())));
     }
 
     public void broadcastTitleToParticipants(Title title) {
@@ -96,7 +95,9 @@ public class RaceSession {
         if (!startTimes.containsKey(player)) return;
         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
         long elapsed = System.currentTimeMillis() - startTimes.get(player);
-        broadcastToParticipants(Component.translatable("race.player.finish", Component.text(player.getName()), Component.text(track.formatTime(elapsed))));
+        for (UUID uuid : participated) {
+            Bukkit.getPlayer(uuid).sendMessage(Component.translatable("race.player.finish", Component.text(player.getName()), Component.text(track.formatTime(elapsed))));
+        }
         player.sendMessage(Component.translatable("race.finished"));
         if (track.addTime(player.getUniqueId(), elapsed)) {
             StorageManager.getInstance().saveTrack(track);
@@ -122,6 +123,7 @@ public class RaceSession {
         // Change the status to not started to allow future joins.
         if (participants.isEmpty()) {
             this.started = false;
+            participated.clear();
         }
     }
 

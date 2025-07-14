@@ -304,7 +304,7 @@ public class RaceCommandHandler implements TabExecutor {
                     track = RaceTrackManager.getInstance().get(args[1]);
                     if (track == null) return noTrack(p);
                     PersonalRecords record = PersonalRecordsManager.getInstance().getRecord(p.getUniqueId());
-                    List<PersonalRaceResult> results = record.getResults(sub);
+                    List<PersonalRaceResult> results = record.getResults(args[1]);
                     if (results == null) return noRecord(p);
                     int attempts = record.getAttemps();
                     sender.sendMessage(Component.translatable("info.track.attempts", Component.text(track.getName()), Component.text(attempts)));

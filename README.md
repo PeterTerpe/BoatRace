@@ -12,14 +12,14 @@ A Java Minecraft Paper plugin that provides timers and scoreboards for races.
 ## Dependencies:
 DecentHolograms v2.9.4
 ## Usage:
-/race create <name> # create a race track
-/race setstart1 <name> [x] [y] [z] # set start region point 1
-/race setstart1 <name> [x] [y] [z] # set start region point 2
-/race setfinish1 <name> [x] [y] [z] # set finish region point 1
-/race setfinish2 <name> [x] [y] [z] # set finish region point 2
-/race delete <name> # delete a track
-/race stop <name> # force stop a race session
-/race hologram <name> <arg> # modify track top5 scoreboard
+/race create <name> # create a race track<br>
+/race setstart1 <name> [x] [y] [z] # set start region point 1<br>
+/race setstart1 <name> [x] [y] [z] # set start region point 2<br>
+/race setfinish1 <name> [x] [y] [z] # set finish region point 1<br>
+/race setfinish2 <name> [x] [y] [z] # set finish region point 2<br>
+/race delete <name> # delete a track<br>
+/race stop <name> # force stop a race session<br>
+/race hologram <name> <arg> # modify track top5 scoreboard<br>
 /race check <name> # check personal top records on specified track
 ## Feature list:
 - Per player translation

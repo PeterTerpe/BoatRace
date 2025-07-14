@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.peterterpe.boatrace.listeners.CountdownMoveListener;
 import me.peterterpe.boatrace.listeners.LeaveSessionListener;
 import me.peterterpe.boatrace.listeners.RaceListener;
+import me.peterterpe.boatrace.listeners.RaceWaitingListener;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationStore;
 import net.kyori.adventure.util.UTF8ResourceBundleControl;
@@ -49,6 +50,7 @@ public class BoatRace extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new RaceListener(), this);
         getServer().getPluginManager().registerEvents(new CountdownMoveListener(raceManager), this);
         getServer().getPluginManager().registerEvents(new LeaveSessionListener(), this);
+        getServer().getPluginManager().registerEvents(new RaceWaitingListener(), this);
         StorageManager.getInstance().loadAll();
         getLogger().info("Plugin enabled successfully!");
     }

@@ -311,7 +311,7 @@ public class RaceCommandHandler implements TabExecutor {
                     int rank = 1;
                     for (PersonalRaceResult result : results) {
                         sender.sendMessage(Component.translatable("info.track.result", Component.text(rank), 
-                        Component.text(result.getElapsed()), Component.text(result.getTimestamp().toString())));
+                        Component.text(track.formatTime(result.getElapsed())), Component.text(result.getTimestamp().toString())));
                         rank++;
                     }
                 } else {

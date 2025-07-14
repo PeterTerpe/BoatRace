@@ -11,6 +11,7 @@ public class StorageManager {
     private final BoatRace plugin = BoatRace.getInstance();
 
     File tracksDir = new File(plugin.getDataFolder(), "tracks");
+    File playerDir = new File(plugin.getDataFolder(), "players");
     private StorageManager() {}
 
     public static StorageManager getInstance() {
@@ -24,6 +25,9 @@ public class StorageManager {
         if (!tracksDir.exists()) {
             tracksDir.mkdir();
         }
+        if (!playerDir.exists()) {
+            playerDir.mkdir();
+        }
     }
 
     public void loadAll() {
@@ -33,15 +37,20 @@ public class StorageManager {
             RaceTrackManager.getInstance().register(track);
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);
         }
+        for (File file : playerDir.listFiles((d, name) -> name.endsWith(".json"))) {
+            PersonalRecords record = PersonalRecordsManager.getInstance().deserialize(playerDir + "/" + file.getName());
+            PersonalRecordsManager.getInstance().loadRecord(record);
+        }
     }
 
     public void saveAll() {
         RaceTrackManager.getInstance().getAll().forEach(this::saveTrack);
+        PersonalRecordsManager.getInstance().getAll().forEach(this::savePlayerRecords);
     }
 
     public void saveTrack(RaceTrack track) {
         String name = track.getName();
-        String jString = RaceTrackManager.getInstance().serialize(track, name+".json");
+        String jString = RaceTrackManager.getInstance().serialize(track);
         File trackFile = new File(tracksDir, name+".json");
         try (Writer writer = new FileWriter(trackFile)) {
             writer.write(jString);
@@ -53,5 +62,16 @@ public class StorageManager {
         String name = track.getName();
         File trackFile = new File(tracksDir, name);
         return trackFile.delete();
+    }
+
+    public void savePlayerRecords(PersonalRecords records) {
+        String jString = PersonalRecordsManager.getInstance().serialize(records);
+        String uString = records.getPlayerID().toString();
+        File recordFile = new File(playerDir, records.getPlayerID().toString()+".json");
+        try (Writer writer = new FileWriter(recordFile)) {
+            writer.write(jString);
+        } catch (IOException e) {
+            Bukkit.getLogger().severe("Unable to save player file '" + uString + "': " + e.getMessage());
+        }
     }
 }

@@ -1,6 +1,9 @@
-package me.peterterpe.boatrace;
+package me.peterterpe.boatrace.adapters;
 
 import com.google.gson.*;
+
+import me.peterterpe.boatrace.RaceResult;
+
 import java.lang.reflect.Type;
 import java.util.UUID;
 

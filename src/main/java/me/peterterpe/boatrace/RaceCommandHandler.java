@@ -55,7 +55,8 @@ public class RaceCommandHandler implements TabExecutor {
                     Map.entry("list",   "boatrace.command.list"),
                     Map.entry("join", "boatrace.command.join"),
                     Map.entry("stop", "boatrace.command.stop"),
-                    Map.entry("setspawn", "boatrace.command.modify")
+                    Map.entry("setspawn", "boatrace.command.modify"),
+                    Map.entry("check", "boatrace.command")
                 );
                 for (var entry : subCommands.entrySet()) {
                     if (!(sender instanceof Player player) || player.hasPermission(entry.getValue())) {
@@ -297,6 +298,27 @@ public class RaceCommandHandler implements TabExecutor {
                 RaceTrackManager.getInstance().updateLeaderboardHologram(track);
                 StorageManager.getInstance().saveTrack(track);
                 break;
+            case "check":
+                if (sender instanceof Player p) {
+                    if (args.length < 2) return needArg(sender);
+                    track = RaceTrackManager.getInstance().get(args[1]);
+                    if (track == null) return noTrack(p);
+                    PersonalRecords record = PersonalRecordsManager.getInstance().getRecord(p.getUniqueId());
+                    List<PersonalRaceResult> results = record.getResults(args[1]);
+                    if (results == null) return noRecord(p);
+                    int attempts = record.getAttemps();
+                    sender.sendMessage(Component.translatable("info.track.attempts", Component.text(track.getName()), Component.text(attempts)));
+                    int rank = 1;
+                    for (PersonalRaceResult result : results) {
+                        sender.sendMessage(Component.translatable("info.track.result", Component.text(rank), 
+                        Component.text(track.formatTime(result.getElapsed())), Component.text(result.getTimestamp().toString())));
+                        rank++;
+                    }
+                } else {
+                    sender.sendMessage(Component.translatable("error.notplayer"));
+                    return false;
+                }
+                break;
             default: sender.sendMessage(Component.translatable("error.command.notfound"));
         }
         return true;
@@ -329,6 +351,10 @@ public class RaceCommandHandler implements TabExecutor {
     }
     private boolean noRes(CommandSender sender) {
         sender.sendMessage(Component.translatable("error.session.notfound"));
+        return false;
+    }
+    private boolean noRecord(CommandSender sender) {
+        sender.sendMessage(Component.translatable("error.record.notfound"));
         return false;
     }
 }

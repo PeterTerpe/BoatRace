@@ -168,6 +168,7 @@ public class RaceSession {
             player.sendMessage(Component.translatable("top5.congrats", Component.text("The Argument")));
         }
         stop(player.getUniqueId());
+        PersonalRecordsManager.getInstance().getRecord(player.getUniqueId()).recordTime(track.getName(), elapsed);
     }
     /** Remove all participants and their timers and set started to false */
     public void forceStop() {

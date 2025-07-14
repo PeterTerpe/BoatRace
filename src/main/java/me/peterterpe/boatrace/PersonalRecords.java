@@ -19,18 +19,10 @@ public class PersonalRecords {
     @Expose private UUID playerId;
     @Expose private int attempts = 0;
     @Expose private final Map<String, PersonalTrackRecord> trackRecords = new HashMap<>();
-    private static PersonalRecords instance;
     Gson gson = new GsonBuilder().setPrettyPrinting()
             .excludeFieldsWithoutExposeAnnotation()
             .registerTypeAdapter(Instant.class, new InstantAdapter())
             .create();
-
-    public static PersonalRecords getInstance() {
-        if (instance == null) {
-            instance = new PersonalRecords();
-        }
-        return instance;
-    }
 
     public PersonalRecords() {}
 
@@ -39,6 +31,7 @@ public class PersonalRecords {
         if (trackRecords.get(trackName).addRecord(new PersonalRaceResult(elapsedMs))) {
             Bukkit.getPlayer(playerId).sendMessage(Component.translatable("congrats.personaltop5"));
         }
+        StorageManager.getInstance().savePlayerRecords(this);
     }
 
     public UUID getPlayerID() { return playerId; }

@@ -43,6 +43,10 @@ public class PersonalRecordsManager {
         }
     }
 
+    public PersonalRecords getRecord(UUID playerID) {
+        return playerRecords.get(playerID);
+    }
+
     public Collection<PersonalRecords> getAll() {
         return playerRecords.values();
     }

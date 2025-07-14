@@ -29,7 +29,7 @@ public class PersonalRecords {
 
     public void recordTime(String trackName, long elapsedMs) {
         attempts++;
-        if (trackRecords.get(trackName).addRecord(new PersonalRaceResult(elapsedMs))) {
+        if (trackRecords.computeIfAbsent(trackName, key -> new PersonalTrackRecord()).addRecord(new PersonalRaceResult(elapsedMs))) {
             Bukkit.getPlayer(playerId).sendMessage(Component.translatable("congrats.personaltop5"));
         }
         StorageManager.getInstance().savePlayerRecords(this);
@@ -38,6 +38,10 @@ public class PersonalRecords {
     public UUID getPlayerID() { return playerId; }
     public int getAttemps() { return attempts; }
     public List<PersonalRaceResult> getResults(String trackName) {
-        return trackRecords.get(trackName).getRecords();
+        PersonalTrackRecord trackRecord = trackRecords.get(trackName);
+        if (trackRecord == null) {
+            return null;
+        }
+        return trackRecord.getRecords();
     }
 }

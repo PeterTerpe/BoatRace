@@ -1,10 +1,11 @@
 package me.peterterpe.boatrace;
 
 import java.time.Instant;
+import com.google.gson.annotations.Expose;
 
 public class PersonalRaceResult {
-    private long elapsed;
-    private Instant timestamp;
+    @Expose private long elapsed;
+    @Expose private Instant timestamp;
 
     public PersonalRaceResult() {}
     public PersonalRaceResult(long elapsed) {

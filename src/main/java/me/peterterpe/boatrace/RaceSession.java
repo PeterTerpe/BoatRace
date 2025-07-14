@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.translation.GlobalTranslator;
 
 import java.util.*;
 
@@ -62,7 +63,10 @@ public class RaceSession {
     public void giveReadyItem(Player player) {
         ItemStack item = new ItemStack(Material.RED_DYE);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.translatable("item.notready"));
+        Component itemName = Component.translatable("item.notready");
+        Locale playerLocale = player.locale();
+        Component renderedName = GlobalTranslator.render(itemName, playerLocale);
+        meta.displayName(renderedName);
         item.setItemMeta(meta);
         player.getInventory().setItem(8, item);
         player.updateInventory();
@@ -79,7 +83,10 @@ public class RaceSession {
         ready.add(player.getUniqueId());
         ItemStack newItem = new ItemStack(Material.GREEN_DYE);
         ItemMeta meta = newItem.getItemMeta();
-        meta.displayName(Component.translatable("item.ready"));
+        Component itemName = Component.translatable("item.ready");
+        Locale playerLocale = player.locale();
+        Component renderedName = GlobalTranslator.render(itemName, playerLocale);
+        meta.displayName(renderedName);
         newItem.setItemMeta(meta);
         player.getInventory().setItem(8, newItem);
         player.updateInventory();

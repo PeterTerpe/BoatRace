@@ -78,6 +78,7 @@ public class RaceSession {
         if (oldItem != null && oldItem.getType() == Material.GREEN_DYE && oldItem.hasItemMeta()) {
             giveReadyItem(player);
             ready.remove(player.getUniqueId());
+            broadcastActionBar(Component.translatable("race.waiting", Component.text(ready.size()), Component.text(participants.size())));
             return;
         }
         ready.add(player.getUniqueId());
@@ -90,6 +91,7 @@ public class RaceSession {
         newItem.setItemMeta(meta);
         player.getInventory().setItem(8, newItem);
         player.updateInventory();
+        broadcastActionBar(Component.translatable("race.waiting", Component.text(ready.size()), Component.text(participants.size())));
         if (participants.size() == ready.size()) {
             startCountdown(5);
             for (UUID uuid : ready) {
@@ -99,7 +101,6 @@ public class RaceSession {
             }
             ready.clear();
         }
-        broadcastActionBar(Component.translatable("race.waiting", Component.text(ready.size()), Component.text(participants.size())));
     }
 
     public void removeItem(Player player) {

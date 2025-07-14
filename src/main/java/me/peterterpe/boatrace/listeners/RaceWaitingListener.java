@@ -31,7 +31,7 @@ public class RaceWaitingListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onInvClick(InventoryClickEvent e) {
         ItemStack item = e.getCurrentItem();
-        if (!isReadyItem(item)) {
+        if (isReadyItem(item)) {
             e.setCancelled(true);
         }
     }
@@ -51,7 +51,7 @@ public class RaceWaitingListener implements Listener {
         Player player = (Player) e.getPlayer();
         if (BoatRace.getInstance().getRaceManager().getSessionFor(player.getUniqueId()) == null) { return; }
             ItemStack item = e.getItemDrop().getItemStack();
-        if (!isReadyItem(item)) {
+        if (isReadyItem(item)) {
             e.setCancelled(true);
         }
     }

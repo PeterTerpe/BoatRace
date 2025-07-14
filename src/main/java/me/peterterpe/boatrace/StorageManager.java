@@ -37,10 +37,10 @@ public class StorageManager {
             RaceTrackManager.getInstance().register(track);
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);
         }
-        // for (File file : playerDir.listFiles((d, name) -> name.endsWith(".json"))) {
-        //     PersonalRecords record = PersonalRecordsManager.getInstance().deserialize(playerDir + "/" + file.getName());
-        //     PersonalRecordsManager.getInstance().loadRecord(record);
-        // }
+        for (File file : playerDir.listFiles((d, name) -> name.endsWith(".json"))) {
+            PersonalRecords record = PersonalRecordsManager.getInstance().deserialize(playerDir + "/" + file.getName());
+            PersonalRecordsManager.getInstance().loadRecord(record);
+        }
     }
 
     public void saveAll() {

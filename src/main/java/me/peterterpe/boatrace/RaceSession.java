@@ -92,6 +92,7 @@ public class RaceSession {
             }
             ready.clear();
         }
+        broadcastActionBar(Component.translatable("race.waiting", Component.text(ready.size()), Component.text(participants.size())));
     }
 
     public void removeItem(Player player) {

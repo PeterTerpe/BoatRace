@@ -44,7 +44,12 @@ public class PersonalRecordsManager {
     }
 
     public PersonalRecords getRecord(UUID playerID) {
-        return playerRecords.get(playerID);
+        PersonalRecords record = playerRecords.get(playerID);
+        if (record == null) {
+            record = new PersonalRecords(playerID);
+            playerRecords.put(playerID, record);
+        }
+        return record;
     }
 
     public Collection<PersonalRecords> getAll() {

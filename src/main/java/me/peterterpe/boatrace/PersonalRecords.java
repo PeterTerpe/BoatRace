@@ -25,6 +25,7 @@ public class PersonalRecords {
             .create();
 
     public PersonalRecords() {}
+    public PersonalRecords(UUID playerID) { this.playerId = playerID; }
 
     public void recordTime(String trackName, long elapsedMs) {
         attempts++;

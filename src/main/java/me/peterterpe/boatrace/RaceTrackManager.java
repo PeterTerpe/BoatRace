@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
+import me.peterterpe.boatrace.adapters.LocationAdapter;
+import me.peterterpe.boatrace.adapters.RaceResultAdapter;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -57,7 +59,7 @@ public class RaceTrackManager {
         return tracks.values();
     }
     // Serialise track to json
-    public String serialize(RaceTrack track, String fileName) {
+    public String serialize(RaceTrack track) {
         return gson.toJson(track);
     }
 

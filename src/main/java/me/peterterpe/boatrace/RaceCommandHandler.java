@@ -192,7 +192,7 @@ public class RaceCommandHandler implements TabExecutor {
                         if (track == null) return noTrack(sender);
                         track.setPoint(pointMap.get(sub), player.getLocation());
                         StorageManager.getInstance().saveTrack(track);
-                        player.sendMessage(Component.translatable("track."+sub+".success"));
+                        player.sendMessage(Component.translatable("success.track.modify"));
                     } else {
                         sender.sendMessage("§cCoordinates must be specified!");
                         return needArg(sender);
@@ -208,7 +208,7 @@ public class RaceCommandHandler implements TabExecutor {
                             Location location = new Location(Bukkit.getWorld(track.getWorldName()), x, y, z);
                             track.setPoint(pointMap.get(sub), location);
                             StorageManager.getInstance().saveTrack(track);
-                            sender.sendMessage(Component.translatable("track.modify.success", Component.text(track.getName())));
+                            sender.sendMessage(Component.translatable("success.track.modify", Component.text(track.getName())));
                         } catch (Exception e) {
                             sender.sendMessage(Component.translatable("error.invalid.pos"));
                             return false;

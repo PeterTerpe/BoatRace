@@ -1,7 +1,6 @@
 
 # BoatRace - A simple racing plugin
 A Java Minecraft Paper plugin that provides timers and scoreboards for races.
-**This plugin is currently in development. Bugs and errors are expected.**
 ## How to use:
 1. Setup a track using commands.
 2. Players can join tracks by using /race join &lt;name>
@@ -10,7 +9,7 @@ A Java Minecraft Paper plugin that provides timers and scoreboards for races.
 5. During countdown, participants who are outside the start region will be teleported to the spawn of the track. And if participants tried to move outside the start region while mounting a boat, the boat is removed. Player movements of participants outside the start region during countdown will be cancelled. **Caution: player position will be lowered when they mount a boat, this must be considered when setting the start region**
 6. When a participant reached the finish line, their timer is sent to all participants within the same session. Their  personal records and track records will be updated immediately if conditions are met.
 ## Dependencies:
-DecentHolograms v2.9.4
+DecentHolograms (tested with v2.9.4)
 ## Usage:
 /race create <name> # create a race track<br>
 /race setstart1 <name> [x] [y] [z] # set start region point 1<br>
@@ -33,5 +32,3 @@ DecentHolograms v2.9.4
 - Luckperms support
 ## TODO:
 - Configurable timezone for timestamp
-- Change player nametag colour in different stages (joined, ready, racing)
-- More supported paper versions

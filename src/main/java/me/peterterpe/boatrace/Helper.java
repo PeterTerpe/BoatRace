@@ -34,17 +34,21 @@ public final class Helper {
         switch (status) {
             case 0:
                 // Default white
-                setPlayerNameColor(player, NamedTextColor.WHITE);
+                String defaultColor = BoatRace.getInstance().getConfig().getString("status-colors.default").toLowerCase();
+                setPlayerNameColor(player, NamedTextColor.NAMES.value(defaultColor));
                 break;
             case 1:
                 // Joined race
-                setPlayerNameColor(player, NamedTextColor.YELLOW);
+                String waitingColor = BoatRace.getInstance().getConfig().getString("status-colors.waiting").toLowerCase();
+                setPlayerNameColor(player, NamedTextColor.NAMES.value(waitingColor));
             case 2:
                 // Ready for race
-                setPlayerNameColor(player, NamedTextColor.GREEN);
+                String readyColor = BoatRace.getInstance().getConfig().getString("status-colors.ready").toLowerCase();
+                setPlayerNameColor(player, NamedTextColor.NAMES.value(readyColor));
             case 3:
                 //Racing
-                setPlayerNameColor(player, NamedTextColor.AQUA);
+                String racingColor = BoatRace.getInstance().getConfig().getString("status-colors.racing").toLowerCase();
+                setPlayerNameColor(player, NamedTextColor.NAMES.value(racingColor));
             default:
                 break;
         }

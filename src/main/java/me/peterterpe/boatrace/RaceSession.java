@@ -70,6 +70,7 @@ public class RaceSession {
         item.setItemMeta(meta);
         player.getInventory().setItem(8, item);
         player.updateInventory();
+        Helper.setNameColorByStatus(player, 1);
     }
 
     public void changeItem(Player player) {
@@ -91,6 +92,7 @@ public class RaceSession {
         newItem.setItemMeta(meta);
         player.getInventory().setItem(8, newItem);
         player.updateInventory();
+        Helper.setNameColorByStatus(player, 2);
         broadcastActionBar(Component.translatable("race.waiting", Component.text(ready.size()), Component.text(participants.size())));
         if (participants.size() == ready.size()) {
             startCountdown(5);
@@ -128,6 +130,7 @@ public class RaceSession {
                         Player player = Bukkit.getPlayer(uuid);
                         player.playSound(player.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_1, 1f, 1f);
                         startTime = System.currentTimeMillis();
+                        Helper.setNameColorByStatus(player, 3);
                     }
                     for (UUID uuid : participants) {
                         Player player = Bukkit.getPlayer(uuid);
@@ -184,6 +187,7 @@ public class RaceSession {
         Player player = Bukkit.getPlayer(uuid);
         raceTimers.get(player).stop();
         raceTimers.remove(player);
+        Helper.setNameColorByStatus(player, 0); // change player nametag color back to default
         // Change the status to not started to allow future joins.
         if (participants.isEmpty()) {
             this.started = false;
@@ -202,10 +206,6 @@ public class RaceSession {
                 player.teleport(loc);
             }
         }
-    }
-
-    public void markReady(UUID uuid) {
-        ready.add(uuid);
     }
 
     public boolean isRunning() {

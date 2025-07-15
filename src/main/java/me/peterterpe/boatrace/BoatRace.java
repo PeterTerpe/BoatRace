@@ -31,6 +31,8 @@ public class BoatRace extends JavaPlugin {
     public void onLoad() {
         instance = this;  // Ensure getInstance() returns a valid reference
         saveDefaultConfig();
+        saveResource("locales/Bundle_en_US.properties", false);
+        saveResource("locales/Bundle_zh_CN.properties", false);
     }
 
     @Override
@@ -39,19 +41,19 @@ public class BoatRace extends JavaPlugin {
         // Localization setup
         TranslationStore.StringBased<MessageFormat> store = TranslationStore.messageFormat(Key.key("namespace:value"));
         for (Locale locale : List.of(Locale.US, Locale.CHINA)) {
-            ResourceBundle bundle = ResourceBundle.getBundle("boatrace.Bundle", locale, UTF8ResourceBundleControl.get());
+            ResourceBundle bundle = ResourceBundle.getBundle("locales.Bundle", locale, UTF8ResourceBundleControl.get());
             store.registerAll(locale, bundle, true);
         }
         GlobalTranslator.translator().addSource(store);
 
         // Core race setup
         this.raceManager = new RaceManager();
+        StorageManager.getInstance().loadAll();
         getCommand("race").setExecutor(new RaceCommandHandler());
         getServer().getPluginManager().registerEvents(new RaceListener(), this);
         getServer().getPluginManager().registerEvents(new CountdownMoveListener(raceManager), this);
         getServer().getPluginManager().registerEvents(new LeaveSessionListener(), this);
         getServer().getPluginManager().registerEvents(new RaceWaitingListener(), this);
-        StorageManager.getInstance().loadAll();
         getLogger().info("Plugin enabled successfully!");
     }
 

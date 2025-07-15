@@ -32,7 +32,7 @@ public class BoatRace extends JavaPlugin {
         instance = this;  // Ensure getInstance() returns a valid reference
         saveDefaultConfig();
         saveResource("locales/Bundle_en_US.properties", false);
-        saveResource("locales/Bundle_es_ES.properties", false);
+        saveResource("locales/Bundle_zh_CN.properties", false);
     }
 
     @Override

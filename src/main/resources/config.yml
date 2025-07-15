@@ -2,5 +2,5 @@
 status-colors:
   default: "WHITE"
   waiting: "YELLOW"
-  ready:   "GREEN"
-  racing:  "AQUA"
+  ready: "GREEN"
+  racing: "AQUA"

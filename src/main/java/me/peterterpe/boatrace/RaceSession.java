@@ -125,7 +125,7 @@ public class RaceSession {
             @Override
             public void run() {
                 if (timer <= 0) {
-                    broadcastTitle(Title.title(Component.translatable("race.go"), Component.empty()));;
+                    broadcastTitle(Title.title(Component.translatable("race.go"), Component.empty()));
                     for (UUID uuid : participants) {
                         Player player = Bukkit.getPlayer(uuid);
                         player.playSound(player.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_1, 1f, 1f);
@@ -160,9 +160,12 @@ public class RaceSession {
         if (!started) return;
         if (!participants.contains(player.getUniqueId())) return;
         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+        stop(player.getUniqueId());
         long elapsed = System.currentTimeMillis() - startTime;
         for (UUID uuid : participated) {
-            Bukkit.getPlayer(uuid).sendMessage(Component.translatable("race.player.finish", Component.text(player.getName()), Component.text(track.formatTime(elapsed))));
+            Player p = Bukkit.getPlayer(uuid);
+            if (p == null) continue;
+            p.sendMessage(Component.translatable("race.player.finish", Component.text(player.getName()), Component.text(track.formatTime(elapsed))));
         }
         player.sendMessage(Component.translatable("race.finished"));
         if (track.addTime(player.getUniqueId(), elapsed)) {
@@ -170,7 +173,6 @@ public class RaceSession {
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);
             player.sendMessage(Component.translatable("top5.congrats", Component.text("The Argument")));
         }
-        stop(player.getUniqueId());
         PersonalRecordsManager.getInstance().getRecord(player.getUniqueId()).recordTime(track.getName(), elapsed);
     }
     /** Remove all participants and their timers and set started to false */

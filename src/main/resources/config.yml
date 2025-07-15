@@ -1,5 +1,6 @@
-mysql-enabled: false
-mysql-host: "localhost"
-mysql-database: "BoatRacing"
-mysql-user: "BoatRacingPlugin"
-mysql-password: "12345"
+# Set colors for nametags at different stages of the race.
+status-colors:
+  default: "WHITE"
+  waiting: "YELLOW"
+  ready:   "GREEN"
+  racing:  "AQUA"

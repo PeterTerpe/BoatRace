@@ -46,12 +46,12 @@ public class BoatRace extends JavaPlugin {
 
         // Core race setup
         this.raceManager = new RaceManager();
+        StorageManager.getInstance().loadAll();
         getCommand("race").setExecutor(new RaceCommandHandler());
         getServer().getPluginManager().registerEvents(new RaceListener(), this);
         getServer().getPluginManager().registerEvents(new CountdownMoveListener(raceManager), this);
         getServer().getPluginManager().registerEvents(new LeaveSessionListener(), this);
         getServer().getPluginManager().registerEvents(new RaceWaitingListener(), this);
-        StorageManager.getInstance().loadAll();
         getLogger().info("Plugin enabled successfully!");
     }
 

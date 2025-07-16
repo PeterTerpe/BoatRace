@@ -300,13 +300,16 @@ public class RaceCommandHandler implements TabExecutor {
                 break;
             case "check":
                 if (sender instanceof Player p) {
-                    if (args.length < 2) return needArg(sender);
+                    if (args.length == 1) {
+                        int attempts = PersonalRecordsManager.getInstance().getRecord(p.getUniqueId()).getAttempts();
+                        p.sendMessage(Component.translatable("info.attempts", Component.text(attempts)));
+                    }
                     track = RaceTrackManager.getInstance().get(args[1]);
                     if (track == null) return noTrack(p);
                     PersonalRecords record = PersonalRecordsManager.getInstance().getRecord(p.getUniqueId());
                     List<PersonalRaceResult> results = record.getResults(args[1]);
                     if (results == null) return noRecord(p);
-                    int attempts = record.getAttemps();
+                    int attempts = record.getAttempts(track.getName());
                     sender.sendMessage(Component.translatable("info.track.attempts", Component.text(track.getName()), Component.text(attempts)));
                     int rank = 1;
                     for (PersonalRaceResult result : results) {

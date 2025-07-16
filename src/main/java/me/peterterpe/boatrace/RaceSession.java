@@ -160,14 +160,13 @@ public class RaceSession {
         if (!started) return;
         if (!participants.contains(player.getUniqueId())) return;
         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
-        stop(player.getUniqueId());
         long elapsed = System.currentTimeMillis() - startTime;
         for (UUID uuid : participated) {
             Player p = Bukkit.getPlayer(uuid);
             if (p == null) continue;
             p.sendMessage(Component.translatable("race.player.finish", Component.text(player.getName()), Component.text(track.formatTime(elapsed))));
         }
-        player.sendMessage(Component.translatable("race.finished"));
+        stop(player.getUniqueId());
         if (track.addTime(player.getUniqueId(), elapsed)) {
             StorageManager.getInstance().saveTrack(track);
             RaceTrackManager.getInstance().updateLeaderboardHologram(track);
@@ -193,6 +192,11 @@ public class RaceSession {
         // Change the status to not started to allow future joins.
         if (participants.isEmpty()) {
             this.started = false;
+            for (UUID playerID : participated) {
+                Player p = Bukkit.getPlayer(playerID);
+                if (p == null) continue;    
+                p.sendMessage(Component.translatable("race.finished"));
+            }
             participated.clear();
         }
     }

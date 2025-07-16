@@ -25,5 +25,6 @@ public class PersonalTrackRecord {
         return false;
     }
 
+    public int getAttempts() { return attempts; }
     public List<PersonalRaceResult> getRecords() { return best; }
 }

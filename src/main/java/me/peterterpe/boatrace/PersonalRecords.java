@@ -36,12 +36,20 @@ public class PersonalRecords {
     }
 
     public UUID getPlayerID() { return playerId; }
-    public int getAttemps() { return attempts; }
+    public int getAttempts() { return attempts; }
     public List<PersonalRaceResult> getResults(String trackName) {
         PersonalTrackRecord trackRecord = trackRecords.get(trackName);
         if (trackRecord == null) {
             return null;
         }
         return trackRecord.getRecords();
+    }
+
+    public int getAttempts(String trackName) {
+        PersonalTrackRecord trackRecord = trackRecords.get(trackName);
+        if (trackRecord == null) {
+            return 0;
+        }
+        return trackRecord.getAttempts();
     }
 }
